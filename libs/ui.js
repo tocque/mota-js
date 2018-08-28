@@ -68,7 +68,27 @@ ui.prototype.drawLine = function (map, x1, y1, x2, y2, style, lineWidth) {
     core.canvas[map].beginPath();
     core.canvas[map].moveTo(x1, y1);
     core.canvas[map].lineTo(x2, y2);
-    core.canvas[map].closePath();
+    core.canvas[map].stroke();
+}
+
+////// 在某个canvas上绘制一个箭头 //////
+ui.prototype.drawArrow = function (map, x1, y1, x2, y2, style, lineWidth) {
+    if (x1==x2 && y1==y2) return;
+    if (core.isset(style)) {
+        core.setStrokeStyle(map, style);
+    }
+    if (core.isset(lineWidth)) {
+        core.setLineWidth(map, lineWidth);
+    }
+    var head = 10;
+    var dx = x2-x1, dy=y2-y1;
+    var angle = Math.atan2(dy,dx);
+    core.canvas[map].beginPath();
+    core.canvas[map].moveTo(x1,y1);
+    core.canvas[map].lineTo(x2, y2);
+    core.canvas[map].lineTo(x2-head*Math.cos(angle-Math.PI/6),y2-head*Math.sin(angle-Math.PI/6));
+    core.canvas[map].moveTo(x2, y2);
+    core.canvas[map].lineTo(x2-head*Math.cos(angle+Math.PI/6),y2-head*Math.sin(angle+Math.PI/6));
     core.canvas[map].stroke();
 }
 
@@ -1550,10 +1570,12 @@ ui.prototype.drawMaps = function (index, x, y) {
     core.canvas.data.textAlign = 'left';
     core.setFont('data', '16px Arial');
 
-    var text = core.floors[floorId].title + " ["+(x-6)+","+(y-6)+"]";
+
+    var text = core.floors[floorId].title;
+    if (mw>13 || mh>13) text+=" ["+(x-6)+","+(y-6)+"]";
     var textX = 16, textY = 18, width = textX + core.canvas.data.measureText(text).width + 16, height = 42;
     core.fillRect('data', 5, 5, width, height, '#000');
-    core.setOpacity('data', 0.5);
+    core.setOpacity('data', 0.4);
     core.fillText('data', text, textX + 5, textY + 15, '#fff');
 
 }

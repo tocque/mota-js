@@ -251,7 +251,16 @@ control.prototype.resetStatus = function(hero, hard, floorId, route, maps, value
         totalTime=core.status.hero.statistics.totalTime;
     }
 
-    this.clearStatus();
+    // 停止各个Timeout和Interval
+    for (var i in core.timeout) {
+        clearTimeout(core.timeout[i]);
+        core.timeout[i] = null;
+    }
+    for (var i in core.interval) {
+        clearInterval(core.interval[i]);
+        core.interval[i] = null;
+    }
+    core.clearStatusBar();
 
     // 初始化status
     core.status = core.clone(core.initStatus);
@@ -286,7 +295,7 @@ control.prototype.resetStatus = function(hero, hard, floorId, route, maps, value
     // 保存的Index
     core.status.saveIndex = core.getLocalStorage('saveIndex2', 1);
 
-    core.status.automaticRoute.clickMoveDirectly = core.getLocalStorage('clickMoveDirectly', false);
+    core.status.automaticRoute.clickMoveDirectly = core.getLocalStorage('clickMoveDirectly', true);
 
     if (core.isset(values))
         core.values = core.clone(values);
@@ -398,7 +407,7 @@ control.prototype.tryMoveDirectly = function (destX, destY) {
     if (Math.abs(core.getHeroLoc('x')-destX)+Math.abs(core.getHeroLoc('y')-destY)<=1)
         return false;
     var testMove = function (dx, dy, dir) {
-        if (dx<0 || dx>=core.bigmap.width|| dy<0 || dy>core.bigmap.height) return false;
+        if (dx<0 || dx>=core.bigmap.width|| dy<0 || dy>=core.bigmap.height) return false;
         if (core.control.moveDirectly(dx, dy)) {
             if (core.isset(dir)) core.moveHero(dir, function() {});
             return true;
@@ -1198,7 +1207,7 @@ control.prototype.updateCheckBlock = function() {
             if (core.isset(id)) {
 
                 if (id=="lavaNet") {
-                    core.status.checkBlock.damage[x+core.bigmap.width*y]+=core.values.lavaDamage;
+                    core.status.checkBlock.damage[x+core.bigmap.width*y]+=core.values.lavaDamage||0;
                     continue;
                 }
 
@@ -1214,8 +1223,17 @@ control.prototype.updateCheckBlock = function() {
                             var nx=x+dx, ny=y+dy;
                             if (nx<0 || nx>=core.bigmap.width || ny<0 || ny>=core.bigmap.height) continue;
                             if (!zoneSquare && Math.abs(dx)+Math.abs(dy)>range) continue;
-                            core.status.checkBlock.damage[nx+ny*core.bigmap.width]+=enemy.value;
+                            core.status.checkBlock.damage[nx+ny*core.bigmap.width]+=enemy.value||0;
                         }
+                    }
+                }
+                // 存在激光
+                if (core.enemys.hasSpecial(enemy.special, 24)) {
+                    for (var nx=0;nx<core.bigmap.width;nx++) {
+                        if (nx!=x) core.status.checkBlock.damage[nx+y*core.bigmap.width]+=enemy.value||0;
+                    }
+                    for (var ny=0;ny<core.bigmap.height;ny++) {
+                        if (ny!=y) core.status.checkBlock.damage[x+ny*core.bigmap.width]+=enemy.value||0;
                     }
                 }
                 // 存在阻击
@@ -1225,7 +1243,7 @@ control.prototype.updateCheckBlock = function() {
                             if (dx==0 && dy==0) continue;
                             var nx=x+dx, ny=y+dy;
                             if (nx<0 || nx>=core.bigmap.width || ny<0 || ny>=core.bigmap.height || Math.abs(dx)+Math.abs(dy)>1) continue;
-                            core.status.checkBlock.damage[nx+ny*core.bigmap.width]+=enemy.value;
+                            core.status.checkBlock.damage[nx+ny*core.bigmap.width]+=enemy.value||0;
                         }
                     }
                 }
@@ -1308,7 +1326,7 @@ control.prototype.checkBlock = function () {
             core.drawTip('受到阻击伤害'+damage+'点');
         }
         else if (damage>0) {
-            core.drawTip('受到领域伤害'+damage+'点');
+            core.drawTip('受到领域或激光伤害'+damage+'点');
         }
 
         if (damage>0) {
@@ -2010,8 +2028,11 @@ control.prototype.replay = function () {
 
         var pos=action.substring(5).split(":");
         var x=parseInt(pos[0]), y=parseInt(pos[1]);
+        var nowx=core.getHeroLoc('x'), nowy=core.getHeroLoc('y');
         if (core.control.moveDirectly(x,y)) {
+            core.ui.drawArrow('route', 32*nowx+16, 32*nowy+16, 32*x+16, 32*y+16, '#FF0000', 3);
             setTimeout(function () {
+                core.clearMap('route');
                 core.replay();
             }, 750 / Math.max(1, core.status.replay.speed));
             return;
@@ -2715,6 +2736,7 @@ control.prototype.resize = function(clientWidth, clientHeight) {
     if (!core.flags.enableLevelUp) count--;
     if (!core.flags.enableDebuff) count--;
     if (core.isset(core.flags.enableKeys) && !core.flags.enableKeys) count--;
+    if (!core.flags.enablePZF) count--;
 
     var statusLineHeight = BASE_LINEHEIGHT * 9 / count;
     var statusLineFontSize = DEFAULT_FONT_SIZE;

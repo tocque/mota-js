@@ -48,11 +48,11 @@ maps.prototype.initBlock = function (x, y, id) {
     if (id.length>2) {
         if (id.indexOf(":f")==id.length-2) {
             id = id.substring(0, id.length - 2);
-            disable = false;
+            disable = true;
         }
         else if (id.indexOf(":t")==id.length-2) {
             id = id.substring(0, id.length - 2);
-            disable = true;
+            disable = false;
         }
     }
     id=parseInt(id);
@@ -276,7 +276,8 @@ maps.prototype.canMoveHero = function(x,y,direction,floorId) {
     }
 
     // 检查将死的领域
-    if (core.status.hero.hp <= core.status.checkBlock.damage[nx+core.bigmap.width*ny] && !core.flags.canGoDeadZone)
+    if (floorId==core.status.floorId && core.status.hero.hp <= core.status.checkBlock.damage[nx+core.bigmap.width*ny]
+        && !core.flags.canGoDeadZone && core.getBlock(nx, ny)==null)
         return false;
 
     return true;
@@ -296,7 +297,8 @@ maps.prototype.canMoveDirectly = function (destX,destY) {
 
     // 可以无视起点事件
     var nowBlockId = core.getBlockId(fromX, fromY);
-    if ((nowBlockId!=null&&nowBlockId!='upFloor'&&nowBlockId!='downFloor')
+    if ((nowBlockId!=null&&nowBlockId!='upFloor'&&nowBlockId!='downFloor'&&nowBlockId!='portal'
+        &&nowBlockId!='upPortal'&&nowBlockId!='leftPortal'&&nowBlockId!='downPortal'&&nowBlockId!='rightPortal')
         ||core.status.checkBlock.damage[fromX+core.bigmap.width*fromY]>0)
         return -1;
 
