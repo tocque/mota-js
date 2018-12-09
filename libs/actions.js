@@ -3,6 +3,8 @@ actions.js：用户交互的事件的处理
 键盘、鼠标、触摸屏事件相关
  */
 
+"use strict";
+
 function actions() {
     this.init();
 }
@@ -164,6 +166,9 @@ actions.prototype.keyDown = function(keyCode) {
         if (core.status.event.id=='replay') {
             this.keyDownReplay(keyCode);
         }
+        if (core.status.event.id=='gameInfo') {
+            this.keyDownGameInfo(keyCode);
+        }
         return;
     }
     if(!core.status.played) {
@@ -276,6 +281,10 @@ actions.prototype.keyUp = function(keyCode, altKey) {
         }
         if (core.status.event.id=='replay') {
             this.keyUpReplay(keyCode);
+            return;
+        }
+        if (core.status.event.id=='gameInfo') {
+            this.keyUpGameInfo(keyCode);
             return;
         }
         if (core.status.event.id=='centerFly') {
@@ -588,6 +597,10 @@ actions.prototype.onclick = function (x, y, stepPostfix) {
         return;
     }
 
+    if (core.status.event.id=='gameInfo') {
+        this.clickGameInfo(x,y);
+    }
+
 }
 
 ////// 滑动鼠标滚轮时的操作 //////
@@ -767,12 +780,6 @@ actions.prototype.clickAction = function (x,y) {
 
 ////// 自定义事件时，按下某个键的操作 //////
 actions.prototype.keyDownAction = function (keycode) {
-    // 视为无效
-    var startTime = core.status.event.data.startTime||0;
-    if (startTime>0 && new Date().getTime()-startTime<250)
-        return;
-    core.status.event.data.startTime = 0;
-
     if (core.status.event.data.type=='choices') {
         var data = core.status.event.data.current;
         var choices = data.choices;
@@ -989,7 +996,6 @@ actions.prototype.clickViewMaps = function (x,y) {
     }
     else if (x>=2 && x<=10 && y>=5 && y<=7) {
         core.clearMap('data');
-        core.setOpacity('data', 1);
         core.ui.closePanel();
     }
 }
@@ -1018,7 +1024,6 @@ actions.prototype.keyUpViewMaps = function (keycode) {
 
     if (keycode==27 || keycode==13 || keycode==32 || (!core.status.replay.replaying && keycode==67)) {
         core.clearMap('data');
-        core.setOpacity('data', 1);
         core.ui.closePanel();
         return;
     }
@@ -1821,8 +1826,9 @@ actions.prototype.clickSwitchs = function (x,y) {
             case 8:
                 if (core.platform.isPC)
                     window.open("editor.html", "_blank");
-                else
+                else if (confirm("即将离开本塔，跳转至本塔工程页面，确认？")) {
                     window.location.href = "editor-mobile.html";
+                }
                 break;
             case 9:
                 if (core.platform.isPC)
@@ -1887,8 +1893,7 @@ actions.prototype.clickSettings = function (x,y) {
                 core.ui.drawSwitchs();
                 break;
             case 1:
-                core.status.event.selection=0;
-                core.ui.drawQuickShop();
+                core.ui.drawKeyBoard();
                 break;
             case 2:
                 core.ui.drawMaps();
@@ -1901,6 +1906,10 @@ actions.prototype.clickSettings = function (x,y) {
                 core.ui.drawSyncSave();
                 break;
             case 5:
+                core.status.event.selection=0;
+                core.ui.drawGameInfo();
+                break;
+            case 6:
                 core.status.event.selection=1;
                 core.ui.drawConfirmBox("你确定要返回标题页面吗？", function () {
                     core.ui.closePanel();
@@ -1910,16 +1919,7 @@ actions.prototype.clickSettings = function (x,y) {
                     core.ui.drawSettings();
                 });
                 break;
-            case 6:
-                core.ui.drawStatistics();
-                break;
             case 7:
-                core.ui.drawHelp();
-                break;
-            case 8:
-                core.ui.drawAbout();
-                break;
-            case 9:
                 core.ui.closePanel();
                 break;
         }
@@ -2045,7 +2045,7 @@ actions.prototype.clickSyncSave = function (x,y) {
                 core.ui.drawStorageRemove();
                 break;
             case 7:
-                core.status.event.selection=3;
+                core.status.event.selection=4;
                 core.ui.drawSettings();
                 break;
 
@@ -2243,14 +2243,14 @@ actions.prototype.clickStorageRemove = function (x, y) {
                         core.ui.closePanel();
                         core.drawText("\t[操作成功]你的所有存档已被清空。");
                         core.status.saveIndex = 1;
-                        core.setLocalStorage('saveIndex2', 1);
+                        core.removeLocalStorage('saveIndex');
                     });
                 }
                 else {
                     localStorage.clear();
                     core.drawText("\t[操作成功]你的所有存档已被清空。");
                     core.status.saveIndex = 1;
-                    core.setLocalStorage('saveIndex2', 1);
+                    core.removeLocalStorage('saveIndex');
                 }
                 break;
             case 1:
@@ -2264,7 +2264,7 @@ actions.prototype.clickStorageRemove = function (x, y) {
                         core.ui.closePanel();
                         core.drawText("\t[操作成功]当前塔的存档已被清空。");
                         core.status.saveIndex = 1;
-                        core.setLocalStorage('saveIndex2', 1);
+                        core.removeLocalStorage('saveIndex');
                     });
                 }
                 else {
@@ -2275,11 +2275,11 @@ actions.prototype.clickStorageRemove = function (x, y) {
                     core.removeLocalStorage("autoSave");
                     core.drawText("\t[操作成功]当前塔的存档已被清空。");
                     core.status.saveIndex = 1;
-                    core.setLocalStorage('saveIndex2', 1);
+                    core.removeLocalStorage('saveIndex');
                 }
                 break;
             case 2:
-                core.status.event.selection=5;
+                core.status.event.selection=6;
                 core.ui.drawSyncSave();
                 break;
         }
@@ -2398,6 +2398,77 @@ actions.prototype.keyUpReplay = function (keycode) {
         if (index<choices.length) {
             var topIndex = 6 - parseInt((choices.length - 1) / 2);
             this.clickReplay(6, topIndex+index);
+        }
+    }
+}
+
+
+////// 游戏信息界面时的点击操作 //////
+actions.prototype.clickGameInfo = function (x, y) {
+    if (x<5 || x>7) return;
+    var choices = core.status.event.ui.choices;
+
+    var topIndex = 6 - parseInt((choices.length - 1) / 2);
+
+    if (y>=topIndex && y<topIndex+choices.length) {
+        var selection = y - topIndex;
+        switch (selection) {
+            case 0:
+                core.ui.drawStatistics();
+                break;
+            case 1:
+                if (core.platform.isPC) {
+                    window.open("/score.php?name="+core.firstData.name+"&num=10", "_blank");
+                }
+                else {
+                    if (confirm("即将离开本塔，跳转至本塔评论页面，确认？")) {
+                        window.location.href = "/score.php?name="+core.firstData.name+"&num=10";
+                    }
+                }
+                break;
+            case 2:
+                core.ui.drawHelp();
+                break;
+            case 3:
+                core.ui.drawAbout();
+                break;
+            case 4:
+                core.status.event.selection=5;
+                core.ui.drawSettings();
+                break;
+        }
+    }
+}
+
+////// 游戏信息界面时，按下某个键的操作 //////
+actions.prototype.keyDownGameInfo = function (keycode) {
+    if (keycode==38) {
+        core.status.event.selection--;
+        core.ui.drawChoices(core.status.event.ui.text, core.status.event.ui.choices);
+    }
+    if (keycode==40) {
+        core.status.event.selection++;
+        core.ui.drawChoices(core.status.event.ui.text, core.status.event.ui.choices);
+    }
+}
+
+////// 游戏信息界面时，放开某个键的操作 //////
+actions.prototype.keyUpGameInfo = function (keycode) {
+    if (keycode==27 || keycode==88) {
+        core.ui.closePanel();
+        return;
+    }
+    var choices = core.status.event.ui.choices;
+    if (keycode==13 || keycode==32 || keycode==67) {
+        var topIndex = 6 - parseInt((choices.length - 1) / 2);
+        this.clickGameInfo(6, topIndex+core.status.event.selection);
+    }
+    // 数字键快速选择
+    if (keycode>=49 && keycode<=57) {
+        var index = keycode-49;
+        if (index<choices.length) {
+            var topIndex = 6 - parseInt((choices.length - 1) / 2);
+            this.clickGameInfo(6, topIndex+index);
         }
     }
 }

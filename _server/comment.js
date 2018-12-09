@@ -1,4 +1,4 @@
-comment_c456ea59_6018_45ef_8bcc_211a24c627dc = 
+var comment_c456ea59_6018_45ef_8bcc_211a24c627dc =
 {
     "_leaf": false,
     "_type": "object",
@@ -41,7 +41,13 @@ comment_c456ea59_6018_45ef_8bcc_211a24c627dc =
                             "_leaf": true,
                             "_type": "textarea",
                             "_data": "装备属性设置，仅对cls为equips有效。\n如果此项不为null，需要是一个对象，里面可含\"type\"，\"atk\"，\"def\"，\"mdef\"，\"animate\"五项，分别对应装备部位、攻防魔防和动画。\n具体详见文档（元件说明-装备）和已有的几个装备的写法。"
-                        }, 
+                        },
+                        "hideInReplay": {
+                            "_leaf": true,
+                            "_type": "checkbox",
+                            "_bool": "bool",
+                            "_data": "是否回放时绘制道具栏。\n如果此项为true，则在回放录像时使用本道具将不会绘制道具栏页面，而是直接使用。\n此项建议在会频繁连续多次使用的道具开启（如开启技能，或者《镜子》那样的镜像切换等等）"
+                        }
                     }
                 },
                 "itemEffect": {
@@ -91,6 +97,12 @@ comment_c456ea59_6018_45ef_8bcc_211a24c627dc =
                     "_type": "textarea",
                     "_string": true,
                     "_data": "名称"
+                },
+                "displayIdInBook": {
+                    "_leaf": true,
+                    "_type": "textarea",
+                    "_string": true,
+                    "_data": "在怪物手册中映射到的怪物ID。如果此项不为null，则在怪物手册中，将用目标ID来替换该怪物原本的ID。\n此项应被运用在同一个怪物的多朝向上。\n例如，如果想定义同一个怪物的向下和向左的行走图，则需要建立两个属性完全相同的怪物。\n但是这样会导致在怪物手册中同时存在向下和向左的两种怪物的显示。\n可以将朝向左的怪物的displayIdInBook项指定为朝向下的怪物ID，这样在怪物手册中则会归一化，只显示一个。"
                 },
                 "hp": {
                     "_leaf": true,
@@ -250,6 +262,11 @@ comment_c456ea59_6018_45ef_8bcc_211a24c627dc =
                     "_type": "textarea",
                     "_range": "thiseval==null||(thiseval instanceof Array)",
                     "_data": "该图块的不可入方向\n可以在这里定义不能从哪个方向访问该图块，可以达到悬崖之类的效果\n例如 [\"down\", \"right\"] 代表不能从下或右访问此图块\n此值对背景层、事件层、前景层上的图块均有效"
+                },
+                "faceIds": {
+                    "_leaf": true,
+                    "_type": "textarea",
+                    "_data": "行走图朝向，仅对NPC有效。可以在这里定义同一个NPC的多个朝向行走图。\n比如 {\"up\":\"N333\",\"down\":\"N334\",\"left\":\"N335\",\"right\":\"N336\"} 就将该素材的上下左右朝向分别绑定到N333,N334,N335和N336四个图块。\n在勇士撞上NPC时，或NPC在移动时，会自动选择最合适的朝向图块（如果存在定义）来进行绘制。"
                 }
             }
         },
@@ -307,6 +324,25 @@ comment_c456ea59_6018_45ef_8bcc_211a24c627dc =
                             "_bool": "bool",
                             "_data": "该层是否不允许被浏览地图看到；如果勾上则浏览地图会跳过该层"
                         },
+                        "firstArrive": {
+                            "_leaf": true,
+                            "_type": "event",
+                            "_event": "firstArrive",
+                            "_data": "第一次到该楼层触发的事件，可以双击进入事件编辑器。"
+                        },
+                        "eachArrive": {
+                            "_leaf": true,
+                            "_type": "event",
+                            "_event": "eachArrive",
+                            "_data": "每次到该楼层触发的事件，可以双击进入事件编辑器；该事件会比firstArrive先执行。"
+                        },
+                        "parallelDo": {
+                            "_leaf": true,
+                            "_type": "textarea",
+                            "_string": true,
+                            "_lint": true,
+                            "_data": "在该层楼时执行的并行事件处理。\n可以在这里写上任意需要自动执行的脚本，比如打怪自动开门等。\n详见文档-事件-并行事件处理。"
+                        },
                         "upFloor": {
                             "_leaf": true,
                             "_type": "textarea",
@@ -317,7 +353,7 @@ comment_c456ea59_6018_45ef_8bcc_211a24c627dc =
                             "_leaf": true,
                             "_type": "textarea",
                             "_range": "thiseval==null||((thiseval instanceof Array) && thiseval.length==2)",
-                            "_data": "该层上楼点，如[2,3]。\n如果此项不为null，则楼层转换时的stair:downFloor，以及楼传器的落点会被替换成该点而不是该层的下楼梯。"
+                            "_data": "该层下楼点，如[2,3]。\n如果此项不为null，则楼层转换时的stair:downFloor，以及楼传器的落点会被替换成该点而不是该层的下楼梯。"
                         },
                         "defaultGround": {
                             "_leaf": true,
@@ -340,7 +376,7 @@ comment_c456ea59_6018_45ef_8bcc_211a24c627dc =
                         "weather": {
                             "_leaf": true,
                             "_type": "textarea",
-                            "_data": "该层的默认天气。本项可忽略表示晴天，如果写则第一项为\"rain\"或\"snow\"代表雨雪，第二项为1-10之间的数代表强度。\n如[\"rain\", 8]代表8级雨天。"
+                            "_data": "该层的默认天气。本项可忽略表示晴天，如果写则第一项为\"rain\"，\"snow\"或\"fog\"代表雨雪雾，第二项为1-10之间的数代表强度。\n如[\"rain\", 8]代表8级雨天。"
                         },
                         "bgm": {
                             "_leaf": true,
@@ -352,12 +388,6 @@ comment_c456ea59_6018_45ef_8bcc_211a24c627dc =
                             "_type": "textarea",
                             "_range": "(thiseval==~~thiseval && thiseval>=0)||thiseval==null",
                             "_data": "每一层的宝石/血瓶效果，即获得宝石和血瓶时框内\"ratio\"的值。"
-                        },
-                        "firstArrive": {
-                            "_leaf": true,
-                            "_type": "event",
-                            "_event": "firstArrive",
-                            "_data": "第一次到该楼层触发的事件，可以双击进入事件编辑器。"
                         },
                         "underGround": {
                             "_leaf": true,

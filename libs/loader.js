@@ -2,6 +2,7 @@
 loader.js：负责对资源的加载
 
  */
+"use strict";
 
 function loader() {
     this.init();
@@ -105,14 +106,10 @@ loader.prototype.loadImage = function (imgName, callback) {
         if (name.indexOf(".")<0)
             name=name+".png";
         var image = new Image();
-        image.src = 'project/images/' + name + "?v=" + main.version;
-        if (image.complete) {
-            callback(imgName, image);
-            return;
-        }
         image.onload = function () {
             callback(imgName, image);
         }
+        image.src = 'project/images/' + name + "?v=" + main.version;
     }
     catch (e) {
         console.log(e);
@@ -237,7 +234,7 @@ loader.prototype.loadMusic = function () {
                     console.log(ee);
                     core.material.sounds[t] = null;
                 }
-            }, function () {
+            }, function (e) {
                 console.log(e);
                 core.material.sounds[t] = null;
             }, null, 'arraybuffer');

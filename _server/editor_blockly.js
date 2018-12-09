@@ -52,18 +52,14 @@ editor_blockly = function () {
       MotaActionBlocks['afterGetItem_m'].xmlText(),
       MotaActionBlocks['afterOpenDoor_m'].xmlText(),
       MotaActionBlocks['firstArrive_m'].xmlText(),
+      MotaActionBlocks['eachArrive_m'].xmlText(),
+      MotaActionBlocks['level_m'].xmlText(),
     ],
     '显示文字':[
       MotaActionBlocks['text_0_s'].xmlText(),
       MotaActionBlocks['text_1_s'].xmlText(),
       MotaActionBlocks['comment_s'].xmlText(),
-      MotaActionFunctions.actionParser.parseList({"type": "choices", "text": "是否跳过剧情", "choices": [
-        {"text": "是", "action": []},
-        {"text": "否", "action": [
-          {"type": "autoText", "text": "\\t[小妖精,fairy]双击方块进入多行编辑\\n用户无法跳过自动剧情文本,大段剧情文本请添加“是否跳过剧情”的提示\\n自动剧情文本\\n自动剧情文本\\n自动剧情文本", "time" :3000},
-          {"type": "autoText", "text": "(可以右键方块后点复制)", "time" :3000},
-        ]},
-      ]}),
+      MotaActionBlocks['autoText_s'].xmlText(),
       MotaActionBlocks['setText_s'].xmlText(),
       MotaActionBlocks['showImage_0_s'].xmlText(),
       MotaActionBlocks['animateImage_0_s'].xmlText(),
@@ -89,6 +85,8 @@ editor_blockly = function () {
         MotaActionBlocks['idString_1_e'].xmlText(['status','hp'])
       ]),
       MotaActionBlocks['setFloor_s'].xmlText(),
+      MotaActionBlocks['setGlobalAttribute_s'].xmlText(),
+      MotaActionBlocks['setGlobalValue_s'].xmlText(),
       MotaActionBlocks['input_s'].xmlText(),
       MotaActionBlocks['input2_s'].xmlText(),
       MotaActionBlocks['update_s'].xmlText(),
@@ -134,8 +132,11 @@ editor_blockly = function () {
     '特效/声音':[
       MotaActionBlocks['sleep_s'].xmlText(),
       MotaActionBlocks['wait_s'].xmlText(),
-      MotaActionBlocks['viberate_s'].xmlText(),
+      MotaActionBlocks['waitAsync_s'].xmlText(),
+      MotaActionBlocks['vibrate_s'].xmlText(),
       MotaActionBlocks['animate_s'].xmlText(),
+      MotaActionBlocks['showStatusBar_s'].xmlText(),
+      MotaActionBlocks['hideStatusBar_s'].xmlText(),
       MotaActionBlocks['setFg_0_s'].xmlText(),
       MotaActionBlocks['setFg_1_s'].xmlText(),
       MotaActionBlocks['setWeather_s'].xmlText(),
@@ -421,7 +422,7 @@ document.getElementById('blocklyDiv').onmousewheel = function(e){
         var type = args.type;
         if (!type) return false;
         editor_blockly.id = id_;
-        codeAreaHL.setValue(input.value.replace(/\\r/g,'\\\\r'));
+        codeAreaHL.setValue(input.value.replace(/\\r/g,'\\\\r').replace(/\\f/,'\\\\f'));
         document.getElementById('entryType').value = type;
         editor_blockly.parse();
         editor_blockly.show();

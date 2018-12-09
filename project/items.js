@@ -1,4 +1,4 @@
-items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a = 
+var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a = 
 {
 	"items": {
 		"yellowKey": {
@@ -184,7 +184,8 @@ items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"fly": {
 			"cls": "constants",
 			"name": "楼层传送器",
-			"text": "可以自由往来去过的楼层"
+			"text": "可以自由往来去过的楼层",
+			"hideInReplay": true
 		},
 		"coin": {
 			"cls": "constants",
@@ -299,7 +300,8 @@ items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"skill1": {
 			"cls": "constants",
 			"name": "技能：二倍斩",
-			"text": "可以打开或关闭主动技能二倍斩"
+			"text": "可以打开或关闭主动技能二倍斩",
+			"hideInReplay": true
 		}
 	},
 	"itemEffect": {
@@ -325,7 +327,7 @@ items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"shield5": "core.status.hero.def += 100;core.status.hero.mdef += 100",
 		"bigKey": "core.status.hero.items.keys.yellowKey++;core.status.hero.items.keys.blueKey++;core.status.hero.items.keys.redKey++;",
 		"superPotion": "core.status.hero.hp *= 2",
-		"moneyPocket": "core.status.hero.money += core.values.moneyPocket"
+		"moneyPocket": "core.status.hero.money += 500"
 	},
 	"itemEffectTip": {
 		"redJewel": "'，攻击+'+core.values.redJewel * ratio",
@@ -350,7 +352,7 @@ items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"shield5": "'，防御+100，魔防+100'",
 		"bigKey": "'，全钥匙+1'",
 		"superPotion": "'，生命值翻倍'",
-		"moneyPocket": "'，金币+'+core.values.moneyPocket"
+		"moneyPocket": "'，金币+500'"
 	},
 	"useItemEffect": {
 		"book": "core.ui.drawBook(0);",
@@ -365,10 +367,10 @@ items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"centerFly": "core.playSound('centerFly.mp3');\ncore.clearMap('hero');\ncore.setHeroLoc('x', (core.bigmap.width||13)-1-core.getHeroLoc('x'));\ncore.setHeroLoc('y', (core.bigmap.height||13)-1-core.getHeroLoc('y'));\ncore.drawHero();\ncore.drawTip(core.material.items[itemId].name + '使用成功');",
 		"upFly": "var loc = {'direction': core.status.hero.loc.direction, 'x': core.status.event.data.x, 'y': core.status.event.data.y};\ncore.changeFloor(core.status.event.data.id, null, loc, null, function (){\n\tcore.drawTip(core.material.items[itemId].name + '使用成功');\n\tcore.replay();\n});",
 		"downFly": "var loc = {'direction': core.status.hero.loc.direction, 'x': core.status.event.data.x, 'y': core.status.event.data.y};\ncore.changeFloor(core.status.event.data.id, null, loc, null, function (){\n\tcore.drawTip(core.material.items[itemId].name + '使用成功');\n\tcore.replay();\n});",
-		"poisonWine": "core.setFlag('poison', false);",
-		"weakWine": "core.setFlag('weak', false);\ncore.status.hero.atk += core.getFlag('weakAtk', core.values.weakValue);\ncore.status.hero.def += core.getFlag('weakDef', core.values.weakValue);",
-		"curseWine": "core.setFlag('curse', false);",
-		"superWine": "core.setFlag('poison', false);\nif (core.hasFlag('weak')) {\n\tcore.setFlag('weak', false);\n\tcore.status.hero.atk += core.getFlag('weakAtk', core.values.weakValue);\n\tcore.status.hero.def += core.getFlag('weakDef', core.values.weakValue);\n}\ncore.setFlag('curse', false);",
+		"poisonWine": "core.removeFlag('poison');",
+		"weakWine": "core.removeFlag('weak');\nif (core.values.weakValue>=1) { // >=1：直接扣数值\n\tcore.status.hero.atk += core.values.weakValue;\n\tcore.status.hero.def += core.values.weakValue;\n}\nelse { // <1：扣比例\n\tcore.setFlag(\"equip_atk_buff\", core.getFlag(\"equip_atk_buff\", 1) + core.values.weakValue);\n\tcore.setFlag(\"equip_def_buff\", core.getFlag(\"equip_def_buff\", 1) + core.values.weakValue);\n}",
+		"curseWine": "core.removeFlag('curse');",
+		"superWine": "core.removeFlag('poison');\nif (core.hasFlag('weak')) {\n\tcore.removeFlag('weak');\n\tif (core.values.weakValue>=1) { // >=1：直接扣数值\n\t\tcore.status.hero.atk += core.values.weakValue;\n\t\tcore.status.hero.def += core.values.weakValue;\n\t}\n\telse { // <1：扣比例\n\t\tcore.setFlag(\"equip_atk_buff\", core.getFlag(\"equip_atk_buff\", 1) + core.values.weakValue);\n\t\tcore.setFlag(\"equip_def_buff\", core.getFlag(\"equip_def_buff\", 1) + core.values.weakValue);\n\t}\n}\ncore.removeFlag('curse');",
 		"lifeWand": "core.insertAction([\n\t{\"type\": \"input\", \"text\": \"请输入生命魔杖使用次数：(0-${item:lifeWand})\"},\n\t{\"type\": \"if\", \"condition\": \"flag:input<=item:lifeWand\",\n\t\t\"true\": [\n\t\t\t{\"type\": \"setValue\", \"name\": \"item:lifeWand\", \"value\": \"item:lifeWand-flag:input\"},\n\t\t\t{\"type\": \"setValue\", \"name\": \"status:hp\", \"value\": \"status:hp+flag:input*100\"},\n\t\t\t\"成功使用${flag:input}次生命魔杖，恢复${flag:input*100}点生命。\"\n\t\t],\n\t\t\"false\": [\"输入不合法！\"]\n\t},\n]);\ncore.addItem('lifeWand', 1);",
 		"jumpShoes": "core.insertAction({\"type\":\"jumpHero\",\"loc\":[core.nextX(2),core.nextY(2)]});",
 		"redPotion": "core.status.hero.hp += core.values.redPotion",
@@ -409,5 +411,6 @@ items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"greenJewel": "true",
 		"yellowJewel": "true",
 		"skill1": "true"
-	}
+	},
+	"canEquip": {}
 }

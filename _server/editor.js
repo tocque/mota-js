@@ -11,6 +11,7 @@ function editor() {
         if (string.indexOf(substring) > -1){
             message = 'Script Error: See Browser Console for Detail';
         } else {
+            if (url) url = url.substring(url.lastIndexOf('/')+1);
             message = [
                 'Message: ' + msg,
                 'URL: ' + url,
@@ -183,6 +184,7 @@ editor.prototype.mapInit = function () {
     editor.currentFloorData.fgmap = editor.fgmap;
     editor.currentFloorData.bgmap = editor.bgmap;
     editor.currentFloorData.firstArrive = [];
+    editor.currentFloorData.eachArrive = [];
     editor.currentFloorData.events = {};
     editor.currentFloorData.changeFloor = {};
     editor.currentFloorData.afterBattle = {};
@@ -195,7 +197,12 @@ editor.prototype.fetchMapFromCore = function(){
     var mapArray = core.maps.save(core.status.maps, core.status.floorId);
     editor.map = mapArray.map(function (v) {
         return v.map(function (v) {
-            return editor.ids[[editor.indexs[parseInt(v)][0]]]
+            var x = parseInt(v), y = editor.indexs[x];
+            if (!core.isset(y)) {
+                printe("素材数字"+x+"未定义。是不是忘了注册，或者接档时没有覆盖icons.js和maps.js？");
+                y = [0];
+            }
+            return editor.ids[y[0]]
         })
     });
     editor.currentFloorId = core.status.floorId;
@@ -208,7 +215,12 @@ editor.prototype.fetchMapFromCore = function(){
         }
         editor[name]=mapArray.map(function (v) {
             return v.map(function (v) {
-                return editor.ids[[editor.indexs[parseInt(v)][0]]]
+                var x = parseInt(v), y = editor.indexs[x];
+                if (!core.isset(y)) {
+                    printe("素材数字"+x+"未定义。是不是忘了注册，或者接档时没有覆盖icons.js和maps.js？");
+                    y = [0];
+                }
+                return editor.ids[y[0]]
             })
         });
     }
@@ -273,6 +285,14 @@ editor.prototype.drawEventBlock = function () {
     }
 }
 
+editor.prototype.drawPosSelection = function () {
+    this.drawEventBlock();
+    var fg=document.getElementById('efg').getContext('2d');
+    fg.strokeStyle = 'rgba(255,255,255,0.7)';
+    fg.lineWidth = 4;
+    fg.strokeRect(32*editor.pos.x - core.bigmap.offsetX + 4, 32*editor.pos.y - core.bigmap.offsetY + 4, 24, 24);
+}
+
 editor.prototype.updateMap = function () {
     var blocks = main.editor.mapIntoBlocks(editor.map.map(function (v) {
         return v.map(function (v) {
@@ -325,7 +345,7 @@ editor.prototype.moveViewport=function(x,y){
     core.bigmap.offsetY = core.clamp(core.bigmap.offsetY+32*y, 0, 32*core.bigmap.height-416);
     core.control.updateViewport();
     editor.buildMark();
-    editor.drawEventBlock();
+    editor.drawPosSelection();
 }
 
 /////////// 通用 ///////////
@@ -629,6 +649,15 @@ editor.prototype.listen = function () {
 
     eui.oncontextmenu=function(e){e.preventDefault()}
 
+    eui.ondblclick = function(e) {
+        // 双击地图可以选中素材
+        var loc = eToLoc(e);
+        var pos = locToPos(loc,true);
+        var thisevent = editor.map[pos.y][pos.x];
+        editor.setSelectBoxFromInfo(thisevent);
+        return;
+    }
+
     eui.onmousedown = function (e) {
         if (e.button==2){
             var loc = eToLoc(e);
@@ -861,6 +890,15 @@ editor.prototype.listen = function () {
             printf('已保存该快捷图块, ctrl + '+(e.keyCode-48)+' 使用.')
             core.setLocalStorage('shortcut',shortcut);
         }
+        // wasd平移大地图
+        if (e.keyCode==87)
+            editor.moveViewport(0,-1)
+        else if (e.keyCode==65)
+            editor.moveViewport(-1,0)
+        else if (e.keyCode==83)
+            editor.moveViewport(0,1);
+        else if (e.keyCode==68)
+            editor.moveViewport(1,0);
     }
 
     var dataSelection = document.getElementById('dataSelection');
@@ -1014,7 +1052,7 @@ editor.prototype.listen = function () {
                 throw(err)
             }
             ;printf('复制事件成功');
-            editor.drawEventBlock();
+            editor.drawPosSelection();
         });
     }
 
@@ -1052,7 +1090,7 @@ editor.prototype.listen = function () {
         fields.forEach(function(v){
             var temp_atsfcytaf=editor.currentFloorData[v][now.x+','+now.y];
             editor.currentFloorData[v][now.x+','+now.y]=editor.currentFloorData[v][last.x+','+last.y];
-            editor.currentFloorData[v][last.x+','+last.y]=temp_atsfcytaf
+            editor.currentFloorData[v][last.x+','+last.y]=temp_atsfcytaf;
         })
         editor.file.saveFloorFile(function (err) {
             if (err) {
@@ -1060,7 +1098,7 @@ editor.prototype.listen = function () {
                 throw(err)
             }
             ;printf('两位置的事件已互换');
-            editor.drawEventBlock();
+            editor.drawPosSelection();
         });
     }
 
@@ -1076,7 +1114,7 @@ editor.prototype.listen = function () {
         editor.map[now.y][now.x]=editor.info;
         editor.updateMap();
         fields.forEach(function(v){
-            editor.currentFloorData[v][now.x+','+now.y]=null;
+            delete editor.currentFloorData[v][now.x+','+now.y];
         })
         editor.file.saveFloorFile(function (err) {
             if (err) {
@@ -1084,7 +1122,7 @@ editor.prototype.listen = function () {
                 throw(err)
             }
             ;printf('清空此点及事件成功');
-            editor.drawEventBlock();
+            editor.drawPosSelection();
         });
     }
 

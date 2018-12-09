@@ -3,6 +3,8 @@ utils.js 工具类
 
  */
 
+"use strict";
+
 function utils() {
     this.init();
 }
@@ -77,7 +79,7 @@ utils.prototype.splitLines = function(canvas, text, maxLength, font) {
         else {
             var toAdd = text.substring(last, i+1);
             var width = core.canvas[canvas].measureText(toAdd).width;
-            if (width>maxLength) {
+            if (core.isset(maxLength) && width>maxLength) {
                 contents.push(text.substring(last, i));
                 last=i;
             }
@@ -325,10 +327,16 @@ utils.prototype.formatBigNumber = function (x) {
 
 ////// 数组转RGB //////
 utils.prototype.arrayToRGB = function (color) {
-    var nowR = parseInt(color[0])||0, nowG = parseInt(color[1])||0, nowB = parseInt(color[2])||0;
-    if (nowR<0) nowR=0; if (nowB<0) nowB=0;if (nowG<0) nowG=0;
-    if (nowR>255) nowR=255; if (nowB>255) nowB=255; if (nowG>255) nowG=255;
+    var nowR = this.clamp(parseInt(color[0]),0,255), nowG = this.clamp(parseInt(color[1]),0,255),
+        nowB = this.clamp(parseInt(color[2]),0,255);
     return "#"+((1<<24)+(nowR<<16)+(nowG<<8)+nowB).toString(16).slice(1);
+}
+
+utils.prototype.arrayToRGBA = function (color) {
+    if (!this.isset(color[3])) color[3]=1;
+    var nowR = this.clamp(parseInt(color[0]),0,255), nowG = this.clamp(parseInt(color[1]),0,255),
+        nowB = this.clamp(parseInt(color[2]),0,255), nowA = this.clamp(parseFloat(color[3]),0,1);
+    return "rgba("+nowR+","+nowG+","+nowB+","+nowA+")";
 }
 
 ////// 加密路线 //////
@@ -640,7 +648,12 @@ utils.prototype.download = function (filename, content) {
 
     // Step 1: 如果是iOS平台，直接不支持
     if (core.platform.isIOS) {
-        alert("iOS平台下不支持下载操作！");
+        if (core.copy(content)) {
+            alert("iOS平台下不支持直接下载文件！\n所有应下载内容已经复制到您的剪切板，请自行创建空白文件并粘贴。");
+        }
+        else {
+            alert("iOS平台下不支持下载操作！");
+        }
         return;
     }
 
@@ -663,7 +676,6 @@ utils.prototype.download = function (filename, content) {
         var blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
         var href = window.URL.createObjectURL(blob);
         var opened=window.open(href, "_blank");
-        // if (!opened) window.location.href=href;
         window.URL.revokeObjectURL(href);
         return;
     }
@@ -723,14 +735,10 @@ utils.prototype.copy = function (data) {
 
 ////// 动画显示某对象 //////
 utils.prototype.show = function (obj, speed, callback) {
-    if (!core.isset(speed)) {
-        obj.style.display = 'block';
-        return;
-    }
     obj.style.display = 'block';
-    if (main.mode!='play'){
+    if (!core.isset(speed) && main.mode!='play') {
         obj.style.opacity = 1;
-        if (core.isset(callback)) {callback();}
+        if (core.isset(callback)) callback();
         return;
     }
     obj.style.opacity = 0;
@@ -749,15 +757,12 @@ utils.prototype.show = function (obj, speed, callback) {
 
 ////// 动画使某对象消失 //////
 utils.prototype.hide = function (obj, speed, callback) {
-    if (!core.isset(speed)) {
+    if (!core.isset(speed) || main.mode!='play'){
         obj.style.display = 'none';
+        if (core.isset(callback)) callback();
         return;
     }
-    if (main.mode!='play'){
-        obj.style.display = 'none';
-        if (core.isset(callback)) {callback();}
-        return;
-    }
+    obj.style.opacity = 1;
     var opacityVal = 1;
     var hideAnimate = window.setInterval(function () {
         opacityVal -= 0.03;

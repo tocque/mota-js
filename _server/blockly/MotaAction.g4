@@ -10,7 +10,7 @@ event_m
 
 /* event_m
 tooltip : 编辑魔塔的事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event
+helpUrl : https://h5mota.com/games/template/docs/#/event
 default : [false,null,null,null]
 B_0_List_0=eval(B_0_List_0);
 var code = {
@@ -32,8 +32,33 @@ point_m
 
 /* point_m
 tooltip : 加点事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=%e5%8a%a0%e7%82%b9%e4%ba%8b%e4%bb%b6
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e5%8a%a0%e7%82%b9%e4%ba%8b%e4%bb%b6
 var code = '{"type": "choices", "choices": [\n'+choicesContext_0+']}\n';
+return code;
+*/;
+
+//升级 事件编辑器入口之一
+level_m
+    :   '等级提升' BGNL? Newline levelCase+ BEND
+    
+
+/* level_m
+tooltip : 升级事件
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e7%bb%8f%e9%aa%8c%e5%8d%87%e7%ba%a7%ef%bc%88%e8%bf%9b%e9%98%b6%2f%e5%a2%83%e7%95%8c%e5%a1%94%ef%bc%89
+var code = '[\n'+levelCase_0+']\n';
+return code;
+*/;
+
+levelCase
+    :   '需求' expression '称号' EvalString? BGNL? Newline action+
+
+
+/* levelCase
+tooltip : 升级设定
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e7%bb%8f%e9%aa%8c%e5%8d%87%e7%ba%a7%ef%bc%88%e8%bf%9b%e9%98%b6%2f%e5%a2%83%e7%95%8c%e5%a1%94%ef%bc%89
+default : [0,"",null]
+colour : this.subColor
+var code = '{"need": "'+expression_0+'", "title": "'+EvalString_0+'", "action": [\n'+action_0+']},\n';
 return code;
 */;
 
@@ -43,7 +68,7 @@ shop_m
     
 /* shop_m
 tooltip : 全局商店列表
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=%e5%85%a8%e5%b1%80%e5%95%86%e5%ba%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e5%85%a8%e5%b1%80%e5%95%86%e5%ba%97
 var code = '['+shoplist_0+']\n';
 return code;
 */;
@@ -68,7 +93,7 @@ shopsub
 
 /* shopsub
 tooltip : 全局商店,消耗填-1表示每个选项的消耗不同,正数表示消耗数值
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=%e5%85%a8%e5%b1%80%e5%95%86%e5%ba%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e5%85%a8%e5%b1%80%e5%95%86%e5%ba%97
 default : ["shop1","贪婪之神","blueShop","1F金币商店",false,false,null,"20+10*times*(times+1)","勇敢的武士啊, 给我${need}金币就可以："]
 var code = {
     'id': IdString_0,
@@ -92,7 +117,7 @@ shopChoices
 
 /* shopChoices
 tooltip : 商店选项,商店消耗是-1时,这里的消耗对应各自选项的消耗,商店消耗不是-1时这里的消耗不填
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=%e5%85%a8%e5%b1%80%e5%95%86%e5%ba%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e5%85%a8%e5%b1%80%e5%95%86%e5%ba%97
 default : ["攻击+1",""]
 colour : this.subColor
 EvalString_1 = EvalString_1 && (', "need": "'+EvalString_1+'"');
@@ -117,7 +142,7 @@ afterBattle_m
 
 /* afterBattle_m
 tooltip : 系统引发的自定义事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=%e7%b3%bb%e7%bb%9f%e5%bc%95%e5%8f%91%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e7%b3%bb%e7%bb%9f%e5%bc%95%e5%8f%91%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6
 var code = '[\n'+action_0+']\n';
 return code;
 */;
@@ -129,7 +154,7 @@ afterGetItem_m
 
 /* afterGetItem_m
 tooltip : 系统引发的自定义事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=%e7%b3%bb%e7%bb%9f%e5%bc%95%e5%8f%91%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e7%b3%bb%e7%bb%9f%e5%bc%95%e5%8f%91%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6
 var code = '[\n'+action_0+']\n';
 return code;
 */;
@@ -141,7 +166,7 @@ afterOpenDoor_m
 
 /* afterOpenDoor_m
 tooltip : 系统引发的自定义事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=%e7%b3%bb%e7%bb%9f%e5%bc%95%e5%8f%91%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e7%b3%bb%e7%bb%9f%e5%bc%95%e5%8f%91%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6
 var code = '[\n'+action_0+']\n';
 return code;
 */;
@@ -153,7 +178,19 @@ firstArrive_m
 
 /* firstArrive_m
 tooltip : 首次到达楼层
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=%e7%b3%bb%e7%bb%9f%e5%bc%95%e5%8f%91%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e7%b3%bb%e7%bb%9f%e5%bc%95%e5%8f%91%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6
+var code = '[\n'+action_0+']\n';
+return code;
+*/;
+
+//eachArrive 事件编辑器入口之一
+eachArrive_m
+    :   '每次到达楼层' BGNL? Newline action+ BEND
+
+
+/* eachArrive_m
+tooltip : 每次到达楼层
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=%e7%b3%bb%e7%bb%9f%e5%bc%95%e5%8f%91%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6
 var code = '[\n'+action_0+']\n';
 return code;
 */;
@@ -165,14 +202,14 @@ changeFloor_m
 
 /* changeFloor_m
 tooltip : 楼梯, 传送门, 如果目标楼层有多个楼梯, 写upFloor或downFloor可能会导致到达的楼梯不确定, 这时候请使用loc方式来指定具体的点位置
-helpUrl : https://ckcz123.github.io/mota-js/#/element?id=%e8%b7%af%e9%9a%9c%ef%bc%8c%e6%a5%bc%e6%a2%af%ef%bc%8c%e4%bc%a0%e9%80%81%e9%97%a8
+helpUrl : https://h5mota.com/games/template/docs/#/element?id=%e8%b7%af%e9%9a%9c%ef%bc%8c%e6%a5%bc%e6%a2%af%ef%bc%8c%e4%bc%a0%e9%80%81%e9%97%a8
 default : [null,"MT1",null,0,0,null,500,null]
 var toFloorId = IdString_0;
 if (Floor_List_0!='floorId') toFloorId = Floor_List_0;
 var loc = ', "loc": ['+Number_0+', '+Number_1+']';
 if (Stair_List_0!=='loc')loc = ', "stair": "'+Stair_List_0+'"';
 DirectionEx_List_0 = DirectionEx_List_0 && (', "direction": "'+DirectionEx_List_0+'"');
-Int_0 = Int_0 ?(', "time": '+Int_0):'';
+Int_0 = (Int_0!=='')  ?(', "time": '+Int_0):'';
 Bool_0 = Bool_0 ?'':(', "portalWithoutTrigger": false');
 var code = '{"floorId": "'+toFloorId+'"'+loc+DirectionEx_List_0+Int_0+Bool_0+' }\n';
 return code;
@@ -189,6 +226,8 @@ action
     |   tip_s
     |   setValue_s
     |   setFloor_s
+    |   setGlobalAttribute_s
+    |   setGlobalValue_s
     |   show_s
     |   hide_s
     |   trigger_s
@@ -203,9 +242,12 @@ action
     |   setBgFgBlock_s
     |   setHeroIcon_s
     |   update_s
+    |   showStatusBar_s
+    |   hideStatusBar_s
     |   updateEnemys_s
     |   sleep_s
     |   wait_s
+    |   waitAsync_s
     |   battle_s
     |   openDoor_s
     |   changeFloor_s
@@ -216,7 +258,7 @@ action
     |   follow_s
     |   unfollow_s
     |   animate_s
-    |   viberate_s
+    |   vibrate_s
     |   showImage_0_s
     |   showImage_1_s
     |   animateImage_0_s
@@ -256,7 +298,7 @@ text_0_s
 
 /* text_0_s
 tooltip : text：显示一段文字（剧情）
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=text%EF%BC%9A%E6%98%BE%E7%A4%BA%E4%B8%80%E6%AE%B5%E6%96%87%E5%AD%97%EF%BC%88%E5%89%A7%E6%83%85%EF%BC%89
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=text%EF%BC%9A%E6%98%BE%E7%A4%BA%E4%B8%80%E6%AE%B5%E6%96%87%E5%AD%97%EF%BC%88%E5%89%A7%E6%83%85%EF%BC%89
 default : ["欢迎使用事件编辑器(双击方块进入多行编辑)"]
 var code = '"'+EvalString_0+'",\n';
 return code;
@@ -268,7 +310,7 @@ text_1_s
 
 /* text_1_s
 tooltip : text：显示一段文字（剧情）,选项较多请右键点击帮助
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=text%EF%BC%9A%E6%98%BE%E7%A4%BA%E4%B8%80%E6%AE%B5%E6%96%87%E5%AD%97%EF%BC%88%E5%89%A7%E6%83%85%EF%BC%89
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=text%EF%BC%9A%E6%98%BE%E7%A4%BA%E4%B8%80%E6%AE%B5%E6%96%87%E5%AD%97%EF%BC%88%E5%89%A7%E6%83%85%EF%BC%89
 default : ["小妖精","fairy","","欢迎使用事件编辑器(双击方块进入多行编辑)"]
 var title='';
 if (EvalString_0==''){
@@ -292,7 +334,7 @@ comment_s
 
 /* comment_s
 tooltip : comment：添加一段会被游戏跳过的注释内容
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=comment%ef%bc%9a%e6%b7%bb%e5%8a%a0%e6%b3%a8%e9%87%8a
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=comment%ef%bc%9a%e6%b7%bb%e5%8a%a0%e6%b3%a8%e9%87%8a
 default : ["可以在这里写添加任何注释内容"]
 colour : this.commentColor
 var code = '{"type": "comment", "text": "'+EvalString_0+'"},\n';
@@ -305,8 +347,8 @@ autoText_s
 
 /* autoText_s
 tooltip : autoText：自动剧情文本,用户无法跳过自动剧情文本,大段剧情文本请添加“是否跳过剧情”的提示
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=autotext%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%89%A7%E6%83%85%E6%96%87%E6%9C%AC
-default : ["小妖精","fairy","",3000,"双击方块进入多行编辑\\n自动剧情文本\\n自动剧情文本\\n自动剧情文本"]
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=autotext%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%89%A7%E6%83%85%E6%96%87%E6%9C%AC
+default : ["小妖精","fairy","",3000,"用户无法跳过自动剧情文本，大段剧情文本请添加“是否跳过剧情”的提示"]
 var title='';
 if (EvalString_0==''){
     if (IdString_0=='')title='';
@@ -329,7 +371,7 @@ setText_s
 
 /* setText_s
 tooltip : setText：设置剧情文本的属性,颜色为RGB三元组或RGBA四元组,打字间隔为剧情文字添加的时间间隔,为整数或不填
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=settext%EF%BC%9A%E8%AE%BE%E7%BD%AE%E5%89%A7%E6%83%85%E6%96%87%E6%9C%AC%E7%9A%84%E5%B1%9E%E6%80%A7
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=settext%EF%BC%9A%E8%AE%BE%E7%BD%AE%E5%89%A7%E6%83%85%E6%96%87%E6%9C%AC%E7%9A%84%E5%B1%9E%E6%80%A7
 default : [null,"","","","",null,"","",""]
 SetTextPosition_List_0 =SetTextPosition_List_0==='null'?'': ', "position": "'+SetTextPosition_List_0+'"';
 var colorRe = /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d),(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d),(25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(,0(\.\d+)?|,1)?$/;
@@ -346,8 +388,15 @@ if (EvalString_2) {
   EvalString_2 = ', "text": ['+EvalString_2+']';
 }
 if (EvalString_3) {
-  if (!colorRe.test(EvalString_3))throw new Error('颜色格式错误,形如:0~255,0~255,0~255,0~1');
-  EvalString_3 = ', "background": ['+EvalString_3+']';
+  if (colorRe.test(EvalString_3)) {
+    EvalString_3 = ', "background": ['+EvalString_3+']';
+  }
+  else if (/^\w+\.png$/.test(EvalString_3)) {
+    EvalString_3 = ', "background": "'+EvalString_3+'"';
+  }
+  else {
+    throw new Error('背景格式错误,必须是形如0~255,0~255,0~255,0~1的颜色，或一个WindowSkin的png图片名称');
+  }
 }
 if (EvalString_4) {
   if (!/^\d+$/.test(EvalString_4))throw new Error('字体大小必须是整数或不填');
@@ -372,7 +421,7 @@ tip_s
 
 /* tip_s
 tooltip : tip：显示一段提示文字
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=tip%EF%BC%9A%E6%98%BE%E7%A4%BA%E4%B8%80%E6%AE%B5%E6%8F%90%E7%A4%BA%E6%96%87%E5%AD%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=tip%EF%BC%9A%E6%98%BE%E7%A4%BA%E4%B8%80%E6%AE%B5%E6%8F%90%E7%A4%BA%E6%96%87%E5%AD%97
 default : ["这段话将在左上角以气泡形式显示"]
 var code = '{"type": "tip", "text": "'+EvalString_0+'"},\n';
 return code;
@@ -384,7 +433,7 @@ setValue_s
 
 /* setValue_s
 tooltip : setValue：设置勇士的某个属性、道具个数, 或某个变量/Flag的值
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=setvalue%EF%BC%9A%E8%AE%BE%E7%BD%AE%E5%8B%87%E5%A3%AB%E7%9A%84%E6%9F%90%E4%B8%AA%E5%B1%9E%E6%80%A7%E3%80%81%E9%81%93%E5%85%B7%E4%B8%AA%E6%95%B0%EF%BC%8C%E6%88%96%E6%9F%90%E4%B8%AA%E5%8F%98%E9%87%8Fflag%E7%9A%84%E5%80%BC
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setvalue%EF%BC%9A%E8%AE%BE%E7%BD%AE%E5%8B%87%E5%A3%AB%E7%9A%84%E6%9F%90%E4%B8%AA%E5%B1%9E%E6%80%A7%E3%80%81%E9%81%93%E5%85%B7%E4%B8%AA%E6%95%B0%EF%BC%8C%E6%88%96%E6%9F%90%E4%B8%AA%E5%8F%98%E9%87%8Fflag%E7%9A%84%E5%80%BC
 colour : this.dataColor
 var code = '{"type": "setValue", "name": "'+idString_e_0+'", "value": "'+expression_0+'"},\n';
 return code;
@@ -396,7 +445,7 @@ setFloor_s
 
 /* setFloor_s
 tooltip : setFloor：设置楼层属性；该楼层属性和编辑器中的楼层属性一一对应
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=setFloor%ef%bc%9a%e8%ae%be%e7%bd%ae%e6%a5%bc%e5%b1%82%e5%b1%9e%e6%80%a7
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setFloor%ef%bc%9a%e8%ae%be%e7%bd%ae%e6%a5%bc%e5%b1%82%e5%b1%9e%e6%80%a7
 default : ["title","","'字符串类型的值要加引号，其他类型则不用'"]
 colour : this.dataColor
 IdString_0 = IdString_0 && (', "floorId": "'+IdString_0+'"');
@@ -405,14 +454,42 @@ return code;
 */;
 
 
+setGlobalAttribute_s
+    :   '设置全局属性' ':' Global_Attribute_List '值' EvalString Newline
+
+
+/* setGlobalAttribute_s
+tooltip : setGlobalAttribute：设置全局属性
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setGlobalAttribute%ef%bc%9a%e8%ae%be%e7%bd%ae%e4%b8%80%e4%b8%aa%e5%85%a8%e5%b1%80%e5%b1%9e%e6%80%a7
+default : ["font","Verdana"]
+colour : this.dataColor
+var code = '{"type": "setGlobalAttribute", "name": "'+Global_Attribute_List_0+'", "value": "'+EvalString_0+'"},\n';
+return code;
+*/;
+
+
+setGlobalValue_s
+    :   '设置全局数值' ':' Global_Value_List '值' EvalString Newline
+
+
+/* setGlobalValue_s
+tooltip : setGlobalValue：设置全局属性
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setGlobalValue%ef%bc%9a%e8%ae%be%e7%bd%ae%e4%b8%80%e4%b8%aa%e5%85%a8%e5%b1%80%e6%95%b0%e5%80%bc
+default : ["lavaDamage","100"]
+colour : this.dataColor
+var code = '{"type": "setGlobalValue", "name": "'+Global_Value_List_0+'", "value": '+EvalString_0+'},\n';
+return code;
+*/;
+
+
 show_s
-    :   '显示事件' 'x' EvalString? ',' 'y' EvalString? '楼层' IdString? '动画时间' Int? Newline
+    :   '显示事件' 'x' EvalString? ',' 'y' EvalString? '楼层' IdString? '动画时间' Int? '不等待执行完毕' Bool? Newline
     
 
 /* show_s
 tooltip : show: 将禁用事件启用,楼层和动画时间可不填,xy可用逗号分隔表示多个点
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=show%EF%BC%9A%E5%B0%86%E4%B8%80%E4%B8%AA%E7%A6%81%E7%94%A8%E4%BA%8B%E4%BB%B6%E5%90%AF%E7%94%A8
-default : ["","","",500]
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=show%EF%BC%9A%E5%B0%86%E4%B8%80%E4%B8%AA%E7%A6%81%E7%94%A8%E4%BA%8B%E4%BB%B6%E5%90%AF%E7%94%A8
+default : ["","","",500,false]
 colour : this.eventColor
 var floorstr = '';
 if (EvalString_0 && EvalString_1) {
@@ -433,18 +510,19 @@ if (EvalString_0 && EvalString_1) {
 }
 IdString_0 = IdString_0 && (', "floorId": "'+IdString_0+'"');
 Int_0 = Int_0 ?(', "time": '+Int_0):'';
-var code = '{"type": "show"'+floorstr+IdString_0+''+Int_0+'},\n';
+Bool_0 = Bool_0 ?', "async": true':'';
+var code = '{"type": "show"'+floorstr+IdString_0+''+Int_0+Bool_0+'},\n';
 return code;
 */;
 
 hide_s
-    :   '隐藏事件' 'x' EvalString? ',' 'y' EvalString? '楼层' IdString? '动画时间' Int? Newline
+    :   '隐藏事件' 'x' EvalString? ',' 'y' EvalString? '楼层' IdString? '动画时间' Int? '不等待执行完毕' Bool? Newline
     
 
 /* hide_s
 tooltip : hide: 将一个启用事件禁用,所有参数均可不填,代表禁用事件自身,xy可用逗号分隔表示多个点
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=hide%EF%BC%9A%E5%B0%86%E4%B8%80%E4%B8%AA%E5%90%AF%E7%94%A8%E4%BA%8B%E4%BB%B6%E7%A6%81%E7%94%A8
-default : ["","","",500]
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=hide%EF%BC%9A%E5%B0%86%E4%B8%80%E4%B8%AA%E5%90%AF%E7%94%A8%E4%BA%8B%E4%BB%B6%E7%A6%81%E7%94%A8
+default : ["","","",500,false]
 colour : this.eventColor
 var floorstr = '';
 if (EvalString_0 && EvalString_1) {
@@ -465,7 +543,8 @@ if (EvalString_0 && EvalString_1) {
 }
 IdString_0 = IdString_0 && (', "floorId": "'+IdString_0+'"');
 Int_0 = Int_0 ?(', "time": '+Int_0):'';
-var code = '{"type": "hide"'+floorstr+IdString_0+''+Int_0+'},\n';
+Bool_0 = Bool_0 ?', "async": true':'';
+var code = '{"type": "hide"'+floorstr+IdString_0+''+Int_0+Bool_0+'},\n';
 return code;
 */;
 
@@ -475,7 +554,7 @@ trigger_s
 
 /* trigger_s
 tooltip : trigger: 立即触发另一个地点的事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=trigger%EF%BC%9A%E7%AB%8B%E5%8D%B3%E8%A7%A6%E5%8F%91%E5%8F%A6%E4%B8%80%E4%B8%AA%E5%9C%B0%E7%82%B9%E7%9A%84%E4%BA%8B%E4%BB%B6
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=trigger%EF%BC%9A%E7%AB%8B%E5%8D%B3%E8%A7%A6%E5%8F%91%E5%8F%A6%E4%B8%80%E4%B8%AA%E5%9C%B0%E7%82%B9%E7%9A%84%E4%BA%8B%E4%BB%B6
 default : ["0","0"]
 colour : this.eventColor
 var code = '{"type": "trigger", "loc": ['+PosString_0+','+PosString_1+']},\n';
@@ -488,7 +567,7 @@ insert_s
 
 /* insert_s
 tooltip : insert: 立即插入另一个地点的事件执行，当前事件不会中断，事件坐标不会改变
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=insert%ef%bc%9a%e6%8f%92%e5%85%a5%e5%8f%a6%e4%b8%80%e4%b8%aa%e5%9c%b0%e7%82%b9%e7%9a%84%e4%ba%8b%e4%bb%b6
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=insert%ef%bc%9a%e6%8f%92%e5%85%a5%e5%8f%a6%e4%b8%80%e4%b8%aa%e5%9c%b0%e7%82%b9%e7%9a%84%e4%ba%8b%e4%bb%b6
 default : ["0","0",""]
 colour : this.eventColor
 IdString_0 = IdString_0 && (', "floorId": "'+IdString_0+'"');
@@ -502,7 +581,7 @@ revisit_s
 
 /* revisit_s
 tooltip : revisit: 立即重启当前事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=revisit%EF%BC%9A%E7%AB%8B%E5%8D%B3%E9%87%8D%E5%90%AF%E5%BD%93%E5%89%8D%E4%BA%8B%E4%BB%B6
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=revisit%EF%BC%9A%E7%AB%8B%E5%8D%B3%E9%87%8D%E5%90%AF%E5%BD%93%E5%89%8D%E4%BA%8B%E4%BB%B6
 colour : this.eventColor
 var code = '{"type": "revisit"},\n';
 return code;
@@ -514,7 +593,7 @@ exit_s
 
 /* exit_s
 tooltip : exit: 立刻结束当前事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=exit%EF%BC%9A%E7%AB%8B%E5%88%BB%E7%BB%93%E6%9D%9F%E5%BD%93%E5%89%8D%E4%BA%8B%E4%BB%B6
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=exit%EF%BC%9A%E7%AB%8B%E5%88%BB%E7%BB%93%E6%9D%9F%E5%BD%93%E5%89%8D%E4%BA%8B%E4%BB%B6
 colour : this.eventColor
 var code = '{"type": "exit"},\n';
 return code;
@@ -526,7 +605,7 @@ setBlock_s
 
 /* setBlock_s
 tooltip : setBlock：设置某个图块,忽略坐标楼层则为当前事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=setblock%EF%BC%9A%E8%AE%BE%E7%BD%AE%E6%9F%90%E4%B8%AA%E5%9B%BE%E5%9D%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setblock%EF%BC%9A%E8%AE%BE%E7%BD%AE%E6%9F%90%E4%B8%AA%E5%9B%BE%E5%9D%97
 colour : this.dataColor
 default : [0,"","",""]
 var floorstr = '';
@@ -544,7 +623,7 @@ showFloorImg_s
 
 /* showFloorImg_s
 tooltip : showFloorImg: 显示一个贴图，xy为左上角坐标，可用逗号分隔表示多个点
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=showFloorImg%ef%bc%9a%e6%98%be%e7%a4%ba%e8%b4%b4%e5%9b%be
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=showFloorImg%ef%bc%9a%e6%98%be%e7%a4%ba%e8%b4%b4%e5%9b%be
 default : ["","",""]
 colour : this.eventColor
 var floorstr = '';
@@ -575,7 +654,7 @@ hideFloorImg_s
 
 /* hideFloorImg_s
 tooltip : hideFloorImg: 隐藏一个贴图，xy为左上角坐标，可用逗号分隔表示多个点
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=hideFloorImg%ef%bc%9a%e9%9a%90%e8%97%8f%e8%b4%b4%e5%9b%be
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=hideFloorImg%ef%bc%9a%e9%9a%90%e8%97%8f%e8%b4%b4%e5%9b%be
 default : ["","",""]
 colour : this.eventColor
 var floorstr = '';
@@ -606,7 +685,7 @@ showBgFgMap_s
 
 /* showBgFgMap_s
 tooltip : showBgFgMap: 显示图层块，即背景图层/前景图层的某些图块，xy为左上角坐标，可用逗号分隔表示多个点
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=showFloorImg%ef%bc%9a%e6%98%be%e7%a4%ba%e8%b4%b4%e5%9b%be
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=showFloorImg%ef%bc%9a%e6%98%be%e7%a4%ba%e8%b4%b4%e5%9b%be
 default : ["bg","","",""]
 colour : this.eventColor
 var floorstr = '';
@@ -637,7 +716,7 @@ hideBgFgMap_s
 
 /* hideBgFgMap_s
 tooltip : hideBgFgMap: 隐藏图层块，即背景图层/前景图层的某些图块，xy为左上角坐标，可用逗号分隔表示多个点
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=hideFloorImg%ef%bc%9a%e9%9a%90%e8%97%8f%e8%b4%b4%e5%9b%be
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=hideFloorImg%ef%bc%9a%e9%9a%90%e8%97%8f%e8%b4%b4%e5%9b%be
 default : ["bg","","",""]
 colour : this.eventColor
 var floorstr = '';
@@ -668,7 +747,7 @@ setBgFgBlock_s
 
 /* setBgFgBlock_s
 tooltip : setBgFgBlock：设置某个图层块,忽略坐标楼层则为当前点
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=setblock%EF%BC%9A%E8%AE%BE%E7%BD%AE%E6%9F%90%E4%B8%AA%E5%9B%BE%E5%9D%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setblock%EF%BC%9A%E8%AE%BE%E7%BD%AE%E6%9F%90%E4%B8%AA%E5%9B%BE%E5%9D%97
 colour : this.eventColor
 default : ["bg",0,"","",""]
 var floorstr = '';
@@ -686,7 +765,7 @@ setHeroIcon_s
 
 /* setHeroIcon_s
 tooltip : setHeroIcon：更改角色行走图
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=setheroicon%EF%BC%9A%E6%9B%B4%E6%94%B9%E8%A7%92%E8%89%B2%E8%A1%8C%E8%B5%B0%E5%9B%BE
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setheroicon%EF%BC%9A%E6%9B%B4%E6%94%B9%E8%A7%92%E8%89%B2%E8%A1%8C%E8%B5%B0%E5%9B%BE
 colour : this.dataColor
 default : ["hero.png"]
 EvalString_0 = EvalString_0 && (', "name": "'+EvalString_0+'"');
@@ -700,9 +779,33 @@ update_s
 
 /* update_s
 tooltip : update: 立刻更新状态栏和地图显伤
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=update%EF%BC%9A%E7%AB%8B%E5%88%BB%E6%9B%B4%E6%96%B0%E7%8A%B6%E6%80%81%E6%A0%8F%E5%92%8C%E5%9C%B0%E5%9B%BE%E6%98%BE%E4%BC%A4
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=update%EF%BC%9A%E7%AB%8B%E5%88%BB%E6%9B%B4%E6%96%B0%E7%8A%B6%E6%80%81%E6%A0%8F%E5%92%8C%E5%9C%B0%E5%9B%BE%E6%98%BE%E4%BC%A4
 colour : this.dataColor
 var code = '{"type": "update"},\n';
+return code;
+*/;
+
+showStatusBar_s
+    :   '显示状态栏' Newline
+
+
+/* showStatusBar_s
+tooltip : showStatusBar: 显示状态栏
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=showStatusBar%ef%bc%9a%e6%98%be%e7%a4%ba%e7%8a%b6%e6%80%81%e6%a0%8f
+colour : this.soundColor
+var code = '{"type": "showStatusBar"},\n';
+return code;
+*/;
+
+hideStatusBar_s
+    :   '隐藏状态栏' Newline
+
+
+/* hideStatusBar_s
+tooltip : hideStatusBar: 隐藏状态栏
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=hideStatusBar%ef%bc%9a%e9%9a%90%e8%97%8f%e7%8a%b6%e6%80%81%e6%a0%8f
+colour : this.soundColor
+var code = '{"type": "hideStatusBar"},\n';
 return code;
 */;
 
@@ -712,7 +815,7 @@ updateEnemys_s
 
 /* updateEnemys_s
 tooltip : updateEnemys: 立刻更新怪物数据
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=updateEnemys%ef%bc%9a%e6%9b%b4%e6%96%b0%e6%80%aa%e7%89%a9%e6%95%b0%e6%8d%ae
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=updateEnemys%ef%bc%9a%e6%9b%b4%e6%96%b0%e6%80%aa%e7%89%a9%e6%95%b0%e6%8d%ae
 colour : this.dataColor
 var code = '{"type": "updateEnemys"},\n';
 return code;
@@ -724,12 +827,13 @@ sleep_s
 
 /* sleep_s
 tooltip : sleep: 等待多少毫秒
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=sleep%EF%BC%9A%E7%AD%89%E5%BE%85%E5%A4%9A%E5%B0%91%E6%AF%AB%E7%A7%92
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=sleep%EF%BC%9A%E7%AD%89%E5%BE%85%E5%A4%9A%E5%B0%91%E6%AF%AB%E7%A7%92
 default : [500]
 colour : this.soundColor
 var code = '{"type": "sleep", "time": '+Int_0+'},\n';
 return code;
 */;
+
 
 battle_s
     :   '强制战斗' IdString Newline
@@ -737,7 +841,7 @@ battle_s
 
 /* battle_s
 tooltip : battle: 强制战斗
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=battle%EF%BC%9A%E5%BC%BA%E5%88%B6%E6%88%98%E6%96%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=battle%EF%BC%9A%E5%BC%BA%E5%88%B6%E6%88%98%E6%96%97
 default : ["greenSlime"]
 colour : this.dataColor
 var code = '{"type": "battle", "id": "'+IdString_0+'"},\n';
@@ -750,7 +854,7 @@ openDoor_s
 
 /* openDoor_s
 tooltip : openDoor: 开门,楼层可不填表示当前层
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=opendoor%EF%BC%9A%E5%BC%80%E9%97%A8
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=opendoor%EF%BC%9A%E5%BC%80%E9%97%A8
 default : ["","",""]
 colour : this.dataColor
 IdString_0 = IdString_0 && (', "floorId": "'+IdString_0+'"');
@@ -768,7 +872,7 @@ changeFloor_s
 
 /* changeFloor_s
 tooltip : changeFloor: 楼层切换,动画时间可不填
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=changefloor%EF%BC%9A%E6%A5%BC%E5%B1%82%E5%88%87%E6%8D%A2
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=changefloor%EF%BC%9A%E6%A5%BC%E5%B1%82%E5%88%87%E6%8D%A2
 default : ["MT1","0","0",null,500]
 colour : this.dataColor
 DirectionEx_List_0 = DirectionEx_List_0 && (', "direction": "'+DirectionEx_List_0+'"');
@@ -787,7 +891,7 @@ changePos_0_s
 
 /* changePos_0_s
 tooltip : changePos: 当前位置切换
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=changepos%EF%BC%9A%E5%BD%93%E5%89%8D%E4%BD%8D%E7%BD%AE%E5%88%87%E6%8D%A2%E5%8B%87%E5%A3%AB%E8%BD%AC%E5%90%91
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=changepos%EF%BC%9A%E5%BD%93%E5%89%8D%E4%BD%8D%E7%BD%AE%E5%88%87%E6%8D%A2%E5%8B%87%E5%A3%AB%E8%BD%AC%E5%90%91
 default : ["","",null]
 colour : this.dataColor
 DirectionEx_List_0 = DirectionEx_List_0 && (', "direction": "'+DirectionEx_List_0+'"');
@@ -801,7 +905,7 @@ changePos_1_s
 
 /* changePos_1_s
 tooltip : changePos: 勇士转向
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=changepos%EF%BC%9A%E5%BD%93%E5%89%8D%E4%BD%8D%E7%BD%AE%E5%88%87%E6%8D%A2%E5%8B%87%E5%A3%AB%E8%BD%AC%E5%90%91
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=changepos%EF%BC%9A%E5%BD%93%E5%89%8D%E4%BD%8D%E7%BD%AE%E5%88%87%E6%8D%A2%E5%8B%87%E5%A3%AB%E8%BD%AC%E5%90%91
 colour : this.dataColor
 default : [null]
 var code = '{"type": "changePos", "direction": "'+Direction_List_0+'"},\n';
@@ -814,7 +918,7 @@ openShop_s
 
 /* openShop_s
 tooltip : 全局商店
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=openshop%EF%BC%9A%E6%89%93%E5%BC%80%E4%B8%80%E4%B8%AA%E5%85%A8%E5%B1%80%E5%95%86%E5%BA%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=openshop%EF%BC%9A%E6%89%93%E5%BC%80%E4%B8%80%E4%B8%AA%E5%85%A8%E5%B1%80%E5%95%86%E5%BA%97
 colour : this.dataColor
 default : ["shop1"]
 var code = '{"type": "openShop", "id": "'+IdString_0+'"},\n';
@@ -827,7 +931,7 @@ disableShop_s
 
 /* disableShop_s
 tooltip : 全局商店
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=disableshop%EF%BC%9A%E7%A6%81%E7%94%A8%E4%B8%80%E4%B8%AA%E5%85%A8%E5%B1%80%E5%95%86%E5%BA%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=disableshop%EF%BC%9A%E7%A6%81%E7%94%A8%E4%B8%80%E4%B8%AA%E5%85%A8%E5%B1%80%E5%95%86%E5%BA%97
 default : ["shop1"]
 colour : this.eventColor
 var code = '{"type": "disableShop", "id": "'+IdString_0+'"},\n';
@@ -840,7 +944,7 @@ follow_s
 
 /* follow_s
 tooltip : follow: 跟随勇士
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=follow%ef%bc%9a%e8%b7%9f%e9%9a%8f%e5%8b%87%e5%a3%ab
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=follow%ef%bc%9a%e8%b7%9f%e9%9a%8f%e5%8b%87%e5%a3%ab
 default : ["npc.png"]
 colour : this.dataColor
 var code = '{"type": "follow", "name": "'+EvalString_0+'"},\n';
@@ -853,7 +957,7 @@ unfollow_s
 
 /* unfollow_s
 tooltip : unfollow: 取消跟随
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=unfollow%ef%bc%9a%e5%8f%96%e6%b6%88%e8%b7%9f%e9%9a%8f
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=unfollow%ef%bc%9a%e5%8f%96%e6%b6%88%e8%b7%9f%e9%9a%8f
 default : [""]
 colour : this.dataColor
 EvalString_0 = EvalString_0 ? (', "name": "' + EvalString_0 + '"') : "";
@@ -861,18 +965,18 @@ var code = '{"type": "unfollow"' + EvalString_0 + '},\n';
 return code;
 */;
 
-viberate_s
+vibrate_s
     :   '画面震动' '时间' Int '不等待执行完毕' Bool Newline
 
 
-/* viberate_s
-tooltip : viberate: 画面震动
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=viberate%ef%bc%9a%e7%94%bb%e9%9d%a2%e9%9c%87%e5%8a%a8
+/* vibrate_s
+tooltip : vibrate: 画面震动
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=vibrate%ef%bc%9a%e7%94%bb%e9%9d%a2%e9%9c%87%e5%8a%a8
 default : [2000,false]
 colour : this.soundColor
 Int_0 = Int_0 ?(', "time": '+Int_0):'';
 var async = Bool_0?', "async": true':''
-var code = '{"type": "viberate"' + Int_0 + async + '},\n';
+var code = '{"type": "vibrate"' + Int_0 + async + '},\n';
 return code;
 */;
 
@@ -882,7 +986,7 @@ animate_s
 
 /* animate_s
 tooltip : animate：显示动画,位置填hero或者1,2形式的位置,或者不填代表当前事件点
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=animate%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%8A%A8%E7%94%BB
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=animate%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%8A%A8%E7%94%BB
 default : ["zone","hero",false]
 colour : this.soundColor
 if (EvalString_0) {
@@ -907,7 +1011,7 @@ showImage_0_s
 
 /* showImage_0_s
 tooltip : showImage：显示图片
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=showimage%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%9B%BE%E7%89%87
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=showimage%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%9B%BE%E7%89%87
 default : ["bg.jpg","0","0"]
 colour : this.printColor
 var code = '{"type": "showImage", "name": "'+EvalString_0+'", "loc": ['+PosString_0+','+PosString_1+']},\n';
@@ -920,7 +1024,7 @@ showImage_1_s
 
 /* showImage_1_s
 tooltip : showImage：清除所有显示的图片
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=showimage%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%9B%BE%E7%89%87
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=showimage%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%9B%BE%E7%89%87
 colour : this.printColor
 var code = '{"type": "showImage"},\n';
 return code;
@@ -932,7 +1036,7 @@ animateImage_0_s
 
 /* animateImage_0_s
 tooltip : animageImage：图片淡入
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=animateimage%EF%BC%9A%E5%9B%BE%E7%89%87%E6%B7%A1%E5%85%A5%E6%B7%A1%E5%87%BA
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=animateimage%EF%BC%9A%E5%9B%BE%E7%89%87%E6%B7%A1%E5%85%A5%E6%B7%A1%E5%87%BA
 default : ["bg.jpg","0","0",500,true,false]
 colour : this.printColor
 var keep = Bool_0?', "keep": true':'';
@@ -947,7 +1051,7 @@ animateImage_1_s
 
 /* animateImage_1_s
 tooltip : animageImage：图片淡出
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=animateimage%EF%BC%9A%E5%9B%BE%E7%89%87%E6%B7%A1%E5%85%A5%E6%B7%A1%E5%87%BA
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=animateimage%EF%BC%9A%E5%9B%BE%E7%89%87%E6%B7%A1%E5%85%A5%E6%B7%A1%E5%87%BA
 default : ["bg.jpg","0","0",500,true,false]
 colour : this.printColor
 var keep = Bool_0?', "keep": true':'';
@@ -962,7 +1066,7 @@ showGif_0_s
 
 /* showGif_0_s
 tooltip : showGif：显示动图
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=showgif%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%8A%A8%E5%9B%BE
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=showgif%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%8A%A8%E5%9B%BE
 default : ["bg.gif","0","0"]
 colour : this.printColor
 var code = '{"type": "showGif", "name": "'+EvalString_0+'", "loc": ['+PosString_0+','+PosString_1+']},\n';
@@ -975,7 +1079,7 @@ showGif_1_s
 
 /* showGif_1_s
 tooltip : showGif：清除所有显示的动图
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=showgif%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%8A%A8%E5%9B%BE
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=showgif%EF%BC%9A%E6%98%BE%E7%A4%BA%E5%8A%A8%E5%9B%BE
 colour : this.printColor
 var code = '{"type": "showGif"},\n';
 return code;
@@ -988,7 +1092,7 @@ moveImage_0_s
 
 /* moveImage_0_s
 tooltip : moveImage：图片移动
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=moveimage%EF%BC%9A%E5%9B%BE%E7%89%87%E7%A7%BB%E5%8A%A8
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=moveimage%EF%BC%9A%E5%9B%BE%E7%89%87%E7%A7%BB%E5%8A%A8
 default : ["bg.jpg","0","0","0","0",500,true,false]
 colour : this.printColor
 var keep = Bool_0?', "keep": true':'';
@@ -1003,7 +1107,7 @@ setFg_0_s
 
 /* setFg_0_s
 tooltip : setFg: 更改画面色调,动画时间可不填
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=setfg%EF%BC%9A%E6%9B%B4%E6%94%B9%E7%94%BB%E9%9D%A2%E8%89%B2%E8%B0%83
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setfg%EF%BC%9A%E6%9B%B4%E6%94%B9%E7%94%BB%E9%9D%A2%E8%89%B2%E8%B0%83
 default : [255,255,255,1,500,false]
 colour : this.soundColor
 var limit = function(v,min,max) {
@@ -1027,7 +1131,7 @@ setFg_1_s
 
 /* setFg_1_s
 tooltip : setFg: 恢复画面色调,动画时间可不填
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=setfg%EF%BC%9A%E6%9B%B4%E6%94%B9%E7%94%BB%E9%9D%A2%E8%89%B2%E8%B0%83
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setfg%EF%BC%9A%E6%9B%B4%E6%94%B9%E7%94%BB%E9%9D%A2%E8%89%B2%E8%B0%83
 default : [500,false]
 colour : this.soundColor
 Int_0 = Int_0 ?(', "time": '+Int_0):'';
@@ -1042,7 +1146,7 @@ setWeather_s
 
 /* setWeather_s
 tooltip : setWeather：更改天气
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=setweather%EF%BC%9A%E6%9B%B4%E6%94%B9%E5%A4%A9%E6%B0%94
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setweather%EF%BC%9A%E6%9B%B4%E6%94%B9%E5%A4%A9%E6%B0%94
 default : [null,1]
 colour : this.soundColor
 if(Int_0<1 || Int_0>10) throw new Error('天气的强度等级, 在1-10之间');
@@ -1052,45 +1156,48 @@ return code;
 */;
 
 move_s
-    :   '移动事件' 'x' PosString? ',' 'y' PosString? '动画时间' Int? '不消失' Bool BGNL? StepString Newline
+    :   '移动事件' 'x' PosString? ',' 'y' PosString? '动画时间' Int? '不消失' Bool '不等待执行完毕' Bool BGNL? StepString Newline
     
 
 /* move_s
 tooltip : move: 让某个NPC/怪物移动,位置可不填代表当前事件
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=move%EF%BC%9A%E8%AE%A9%E6%9F%90%E4%B8%AAnpc%E6%80%AA%E7%89%A9%E7%A7%BB%E5%8A%A8
-default : ["","",500,false,"上右3下2左上左2"]
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=move%EF%BC%9A%E8%AE%A9%E6%9F%90%E4%B8%AAnpc%E6%80%AA%E7%89%A9%E7%A7%BB%E5%8A%A8
+default : ["","",500,false,false,"上右3下2左上左2"]
 colour : this.eventColor
 var floorstr = '';
 if (PosString_0 && PosString_1) {
     floorstr = ', "loc": ['+PosString_0+','+PosString_1+']';
 }
 Int_0 = Int_0 ?(', "time": '+Int_0):'';
-var code = '{"type": "move"'+floorstr+''+Int_0+', "steps": '+JSON.stringify(StepString_0)+', "keep": '+Bool_0+'},\n';
+Bool_0 = Bool_0?', "keep": true':'';
+Bool_1 = Bool_1?', "async": true':'';
+var code = '{"type": "move"'+floorstr+Int_0+Bool_0+Bool_1+', "steps": '+JSON.stringify(StepString_0)+'},\n';
 return code;
 */;
 
 moveHero_s
-    :   '移动勇士' '动画时间' Int? BGNL? StepString Newline
+    :   '移动勇士' '动画时间' Int? '不等待执行完毕' Bool BGNL? StepString Newline
     
 
 /* moveHero_s
 tooltip : moveHero：移动勇士,用这种方式移动勇士的过程中将无视一切地形, 无视一切事件, 中毒状态也不会扣血
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=movehero%EF%BC%9A%E7%A7%BB%E5%8A%A8%E5%8B%87%E5%A3%AB
-default : [500,"上右3下2左上左2"]
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=movehero%EF%BC%9A%E7%A7%BB%E5%8A%A8%E5%8B%87%E5%A3%AB
+default : [500,false,"上右3下2左上左2"]
 colour : this.dataColor
 Int_0 = Int_0 ?(', "time": '+Int_0):'';
-var code = '{"type": "moveHero"'+Int_0+', "steps": '+JSON.stringify(StepString_0)+'},\n';
+Bool_0 = Bool_0?', "async": true':'';
+var code = '{"type": "moveHero"'+Int_0+Bool_0+', "steps": '+JSON.stringify(StepString_0)+'},\n';
 return code;
 */;
 
 jump_s
-    :   '跳跃事件' '起始 x' PosString? ',' 'y' PosString? '终止 x' PosString? ',' 'y' PosString? '动画时间' Int? '不消失' Bool Newline
+    :   '跳跃事件' '起始 x' PosString? ',' 'y' PosString? '终止 x' PosString? ',' 'y' PosString? '动画时间' Int? '不消失' Bool '不等待执行完毕' Bool Newline
 
 
 /* jump_s
 tooltip : jump: 让某个NPC/怪物跳跃
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=jump%EF%BC%9A%E8%AE%A9%E6%9F%90%E4%B8%AANPC%2F%E6%80%AA%E7%89%A9%E8%B7%B3%E8%B7%83
-default : ["","","","",500,true]
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=jump%EF%BC%9A%E8%AE%A9%E6%9F%90%E4%B8%AANPC%2F%E6%80%AA%E7%89%A9%E8%B7%B3%E8%B7%83
+default : ["","","","",500,true,false]
 colour : this.eventColor
 var floorstr = '';
 if (PosString_0 && PosString_1) {
@@ -1100,25 +1207,28 @@ if (PosString_2 && PosString_3) {
     floorstr += ', "to": ['+PosString_2+','+PosString_3+']';
 }
 Int_0 = Int_0 ?(', "time": '+Int_0):'';
-var code = '{"type": "jump"'+floorstr+''+Int_0+', "keep": '+Bool_0+'},\n';
+Bool_0 = Bool_0?', "keep": true':'';
+Bool_1 = Bool_1?', "async": true':'';
+var code = '{"type": "jump"'+floorstr+''+Int_0+Bool_0+Bool_1+'},\n';
 return code;
 */;
 
 jumpHero_s
-    :   '跳跃勇士' 'x' PosString? ',' 'y' PosString? '动画时间' Int? Newline
+    :   '跳跃勇士' 'x' PosString? ',' 'y' PosString? '动画时间' Int? '不等待执行完毕' Bool Newline
 
 
 /* jumpHero_s
 tooltip : jumpHero: 跳跃勇士
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=jumpHero%EF%BC%9A%E8%B7%B3%E8%B7%83%E5%8B%87%E5%A3%AB
-default : ["","",500]
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=jumpHero%EF%BC%9A%E8%B7%B3%E8%B7%83%E5%8B%87%E5%A3%AB
+default : ["","",500,false]
 colour : this.dataColor
 var floorstr = '';
 if (PosString_0 && PosString_1) {
     floorstr = ', "loc": ['+PosString_0+','+PosString_1+']';
 }
 Int_0 = Int_0 ?(', "time": '+Int_0):'';
-var code = '{"type": "jumpHero"'+floorstr+Int_0+'},\n';
+Bool_0 = Bool_0?', "async": true':'';
+var code = '{"type": "jumpHero"'+floorstr+Int_0+Bool_0+'},\n';
 return code;
 */;
 
@@ -1128,7 +1238,7 @@ playBgm_s
 
 /* playBgm_s
 tooltip : playBgm: 播放背景音乐
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=playbgm%EF%BC%9A%E6%92%AD%E6%94%BE%E8%83%8C%E6%99%AF%E9%9F%B3%E4%B9%90
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=playbgm%EF%BC%9A%E6%92%AD%E6%94%BE%E8%83%8C%E6%99%AF%E9%9F%B3%E4%B9%90
 default : ["bgm.mp3"]
 colour : this.soundColor
 var code = '{"type": "playBgm", "name": "'+EvalString_0+'"},\n';
@@ -1141,7 +1251,7 @@ pauseBgm_s
 
 /* pauseBgm_s
 tooltip : pauseBgm: 暂停背景音乐
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=pausebgm%EF%BC%9A%E6%9A%82%E5%81%9C%E8%83%8C%E6%99%AF%E9%9F%B3%E4%B9%90
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=pausebgm%EF%BC%9A%E6%9A%82%E5%81%9C%E8%83%8C%E6%99%AF%E9%9F%B3%E4%B9%90
 colour : this.soundColor
 var code = '{"type": "pauseBgm"},\n';
 return code;
@@ -1153,7 +1263,7 @@ resumeBgm_s
 
 /* resumeBgm_s
 tooltip : resumeBgm: 恢复背景音乐
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=resumebgm%EF%BC%9A%E6%81%A2%E5%A4%8D%E8%83%8C%E6%99%AF%E9%9F%B3%E4%B9%90
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=resumebgm%EF%BC%9A%E6%81%A2%E5%A4%8D%E8%83%8C%E6%99%AF%E9%9F%B3%E4%B9%90
 colour : this.soundColor
 var code = '{"type": "resumeBgm"},\n';
 return code;
@@ -1165,7 +1275,7 @@ playSound_s
 
 /* playSound_s
 tooltip : playSound: 播放音效
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=playsound%EF%BC%9A%E6%92%AD%E6%94%BE%E9%9F%B3%E6%95%88
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=playsound%EF%BC%9A%E6%92%AD%E6%94%BE%E9%9F%B3%E6%95%88
 default : ["item.mp3"]
 colour : this.soundColor
 var code = '{"type": "playSound", "name": "'+EvalString_0+'"},\n';
@@ -1178,7 +1288,7 @@ setVolume_s
 
 /* setVolume_s
 tooltip : setVolume: 设置音量
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=setvolume%EF%BC%9A%E8%AE%BE%E7%BD%AE%E9%9F%B3%E9%87%8F
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=setvolume%EF%BC%9A%E8%AE%BE%E7%BD%AE%E9%9F%B3%E9%87%8F
 default : [90, 500, false]
 colour : this.soundColor
 Int_1 = Int_1?(', "time": '+Int_1):""
@@ -1193,9 +1303,10 @@ win_s
 
 /* win_s
 tooltip : win: 获得胜利, 该事件会显示获胜页面, 并重新游戏
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=win%EF%BC%9A%E8%8E%B7%E5%BE%97%E8%83%9C%E5%88%A9
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=win%EF%BC%9A%E8%8E%B7%E5%BE%97%E8%83%9C%E5%88%A9
 default : ["",false]
-var code = '{"type": "win", "reason": "'+EvalString_0+'", "norank": '+(Bool_0?1:0)+'},\n';
+Bool_0 = Bool_0?', "norank": 1':'';
+var code = '{"type": "win", "reason": "'+EvalString_0+'"'+Bool_0+'},\n';
 return code;
 */;
 
@@ -1205,7 +1316,7 @@ lose_s
 
 /* lose_s
 tooltip : lose: 游戏失败, 该事件会显示失败页面, 并重新开始游戏
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=lose%EF%BC%9A%E6%B8%B8%E6%88%8F%E5%A4%B1%E8%B4%A5
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=lose%EF%BC%9A%E6%B8%B8%E6%88%8F%E5%A4%B1%E8%B4%A5
 default : [""]
 var code = '{"type": "lose", "reason": "'+EvalString_0+'"},\n';
 return code;
@@ -1217,7 +1328,7 @@ input_s
 
 /* input_s
 tooltip : input：接受用户输入数字, 事件只能接受非负整数输入, 所有非法的输入将全部变成0
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=input%ef%bc%9a%e6%8e%a5%e5%8f%97%e7%94%a8%e6%88%b7%e8%be%93%e5%85%a5%e6%95%b0%e5%ad%97
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=input%ef%bc%9a%e6%8e%a5%e5%8f%97%e7%94%a8%e6%88%b7%e8%be%93%e5%85%a5%e6%95%b0%e5%ad%97
 default : ["请输入一个数"]
 colour : this.dataColor
 var code = '{"type": "input", "text": "'+EvalString_0+'"},\n';
@@ -1230,7 +1341,7 @@ input2_s
 
 /* input2_s
 tooltip : input2：接受用户输入文本, 允许用户输入任何形式的文本
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=input2%ef%bc%9a%e6%8e%a5%e5%8f%97%e7%94%a8%e6%88%b7%e8%be%93%e5%85%a5%e6%96%87%e6%9c%ac
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=input2%ef%bc%9a%e6%8e%a5%e5%8f%97%e7%94%a8%e6%88%b7%e8%be%93%e5%85%a5%e6%96%87%e6%9c%ac
 default : ["请输入文本"]
 colour : this.dataColor
 var code = '{"type": "input2", "text": "'+EvalString_0+'"},\n';
@@ -1243,7 +1354,7 @@ if_s
 
 /* if_s
 tooltip : if: 条件判断
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=if%EF%BC%9A%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=if%EF%BC%9A%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD
 colour : this.eventColor
 var code = ['{"type": "if", "condition": "',expression_0,'",\n',
     '"true": [\n',action_0,'],\n',
@@ -1258,7 +1369,7 @@ switch_s
 
 /* switch_s
 tooltip : switch: 多重条件分歧
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=switch%EF%BC%9A%E5%A4%9A%E9%87%8D%E6%9D%A1%E4%BB%B6%E5%88%86%E6%AD%A7
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=switch%EF%BC%9A%E5%A4%9A%E9%87%8D%E6%9D%A1%E4%BB%B6%E5%88%86%E6%AD%A7
 default : ["判别值"]
 colour : this.eventColor
 var code = ['{"type": "switch", "condition": "',expression_0,'", "caseList": [\n',
@@ -1273,7 +1384,7 @@ switchCase
 
 /* switchCase
 tooltip : 选项的选择
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=switch%EF%BC%9A%E5%A4%9A%E9%87%8D%E6%9D%A1%E4%BB%B6%E5%88%86%E6%AD%A7
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=switch%EF%BC%9A%E5%A4%9A%E9%87%8D%E6%9D%A1%E4%BB%B6%E5%88%86%E6%AD%A7
 colour : this.subColor
 var code = '{"case": "'+expression_0+'", "action": [\n'+action_0+']},\n';
 return code;
@@ -1285,7 +1396,7 @@ choices_s
 
 /* choices_s
 tooltip : choices: 给用户提供选项
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=choices%EF%BC%9A%E7%BB%99%E7%94%A8%E6%88%B7%E6%8F%90%E4%BE%9B%E9%80%89%E9%A1%B9
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=choices%EF%BC%9A%E7%BB%99%E7%94%A8%E6%88%B7%E6%8F%90%E4%BE%9B%E9%80%89%E9%A1%B9
 default : ["","流浪者","woman"]
 var title='';
 if (EvalString_1==''){
@@ -1309,7 +1420,7 @@ choicesContext
 
 /* choicesContext
 tooltip : 选项的选择
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=choices%EF%BC%9A%E7%BB%99%E7%94%A8%E6%88%B7%E6%8F%90%E4%BE%9B%E9%80%89%E9%A1%B9
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=choices%EF%BC%9A%E7%BB%99%E7%94%A8%E6%88%B7%E6%8F%90%E4%BE%9B%E9%80%89%E9%A1%B9
 default : ["提示文字:红钥匙"]
 colour : this.subColor
 var code = '{"text": "'+EvalString_0+'", "action": [\n'+action_0+']},\n';
@@ -1321,7 +1432,7 @@ while_s
 
 /* while_s
 tooltip : while：循环处理
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=while%EF%BC%9A%E5%BE%AA%E7%8E%AF%E5%A4%84%E7%90%86
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=while%EF%BC%9A%E5%BE%AA%E7%8E%AF%E5%A4%84%E7%90%86
 colour : this.eventColor
 var code = ['{"type": "while", "condition": "',expression_0,'",\n',
     '"data": [\n',action_0,'],\n',
@@ -1334,7 +1445,7 @@ break_s
 
 /* break_s
 tooltip : break：跳出循环, 如果break事件不在任何循环中被执行，则和exit等价，即会立刻结束当前事件！
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=break%EF%BC%9A%E8%B7%B3%E5%87%BA%E5%BE%AA%E7%8E%AF
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=break%EF%BC%9A%E8%B7%B3%E5%87%BA%E5%BE%AA%E7%8E%AF
 colour : this.eventColor
 var code = '{"type": "break"},\n';
 return code;
@@ -1345,7 +1456,7 @@ continue_s
 
 /* continue_s
 tooltip : continue：继续执行当前循环的下一轮, 如果continue事件不在任何循环中被执行，则和exit等价，即会立刻结束当前事件！
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=continue%EF%BC%9A%E7%BB%A7%E7%BB%AD%E6%89%A7%E8%A1%8C%E5%BD%93%E5%89%8D%E5%BE%AA%E7%8E%AF
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=continue%EF%BC%9A%E7%BB%A7%E7%BB%AD%E6%89%A7%E8%A1%8C%E5%BD%93%E5%89%8D%E5%BE%AA%E7%8E%AF
 colour : this.eventColor
 var code = '{"type": "continue"},\n';
 return code;
@@ -1358,22 +1469,37 @@ wait_s
 
 /* wait_s
 tooltip : wait: 等待用户操作并获得按键或点击信息（具体用法看文档）
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=wait%EF%BC%9A%E7%AD%89%E5%BE%85%E7%94%A8%E6%88%B7%E6%93%8D%E4%BD%9C
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=wait%EF%BC%9A%E7%AD%89%E5%BE%85%E7%94%A8%E6%88%B7%E6%93%8D%E4%BD%9C
 colour : this.soundColor
 var code = '{"type": "wait"},\n';
 return code;
 */;
 
+
+waitAsync_s
+    :   '等待所有异步事件执行完毕'
+
+
+/* waitAsync_s
+tooltip : waitAsync: 等待所有异步事件执行完毕
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=waitAsync%ef%bc%9a%e7%ad%89%e5%be%85%e6%89%80%e6%9c%89%e5%bc%82%e6%ad%a5%e4%ba%8b%e4%bb%b6%e6%89%a7%e8%a1%8c%e5%ae%8c%e6%af%95
+colour : this.soundColor
+var code = '{"type": "waitAsync"},\n';
+return code;
+*/;
+
+
 function_s
-    :   '自定义JS脚本' BGNL? Newline RawEvalString Newline BEND Newline
+    :   '自定义JS脚本' '不自动执行下一个事件' Bool BGNL? Newline RawEvalString Newline BEND Newline
     
 
 /* function_s
 tooltip : 可双击多行编辑，请勿使用异步代码。常见API参见文档附录。
-helpUrl : https://ckcz123.github.io/mota-js/#/event?id=function%EF%BC%9A%E8%87%AA%E5%AE%9A%E4%B9%89js%E8%84%9A%E6%9C%AC
-default : ["alert(core.getStatus(\"atk\"));"]
+helpUrl : https://h5mota.com/games/template/docs/#/event?id=function%EF%BC%9A%E8%87%AA%E5%AE%9A%E4%B9%89js%E8%84%9A%E6%9C%AC
+default : [false,"alert(core.getStatus(\"atk\"));"]
 colour : this.dataColor
-var code = '{"type": "function", "function": "function(){\\n'+JSON.stringify(RawEvalString_0).slice(1,-1).split('\\\\n').join('\\n')+'\\n}"},\n';
+Bool_0 = Bool_0?', "async": true':'';
+var code = '{"type": "function"'+Bool_0+', "function": "function(){\\n'+JSON.stringify(RawEvalString_0).slice(1,-1).split('\\\\n').join('\\n')+'\\n}"},\n';
 return code;
 */;
 
@@ -1525,8 +1651,8 @@ Arithmetic_List
     ;
 
 Weather_List
-    :   '无'|'雨'|'雪'
-    /*Weather_List ['','rain','snow']*/;
+    :   '无'|'雨'|'雪'|'雾'
+    /*Weather_List ['','rain','snow','fog']*/;
 
 B_0_List
     :   '不改变'|'不可通行'|'可以通行'
@@ -1543,6 +1669,14 @@ Bg_Fg_List
 Floor_Meta_List
     :   '楼层中文名'|'状态栏名称'|'能否使用楼传'|'能否打开快捷商店'|'是否不可浏览地图'|'默认地面ID'|'楼层贴图'|'宝石血瓶效果'|'上楼点坐标'|'下楼点坐标'|'背景音乐'|'画面色调'|'天气和强度'|'是否地下层'
     /*Floor_Meta_List ['title','name','canFlyTo', 'canUseQuickShop', 'cannotViewMap', 'defaultGround', 'images', 'item_ratio', 'upFloor', 'downFloor', 'bgm', 'color', 'weather', 'underGround']*/;
+
+Global_Attribute_List
+    :   '全局字体'|'横屏左侧状态栏背景'|'竖屏上方状态栏背景'|'竖屏下方道具栏背景'|'边框颜色'|'状态栏文字色'|'难度显示文字色'|'楼层转换背景'|'楼层转换文字色'
+    /*Global_Attribute_List ['font','statusLeftBackground','statusTopBackground', 'toolsBackground', 'borderColor', 'statusBarColor', 'hardLabelColor', 'floorChangingBackground', 'floorChangingTextColor']*/;
+
+Global_Value_List
+    :   '血网伤害'|'中毒伤害'|'衰弱效果'|'红宝石效果'|'蓝宝石效果'|'绿宝石效果'|'红血瓶效果'|'蓝血瓶效果'|'黄血瓶效果'|'绿血瓶效果'|'破甲比例'|'反击比例'|'净化比例'|'仇恨增加值'|'行走速度'|'动画时间'|'楼层切换时间'
+    /*Global_Value_List ['lavaDamage','poisonDamage','weakValue', 'redJewel', 'blueJewel', 'greenJewel', 'redPotion', 'bluePotion', 'yellowPotion', 'greenPotion', 'breakArmor', 'counterAttack', 'purify', 'hatred', 'moveSpeed', 'animateSpeed', 'floorChangeTime']*/;
 
 Bool:   'TRUE' 
     |   'FALSE'
@@ -1679,6 +1813,15 @@ ActionParser.prototype.parse = function (obj,type) {
       }
       return MotaActionBlocks['point_m'].xmlText([text_choices]);
 
+    case 'level':
+      if(!obj)obj={};
+      var text_choices = null;
+      for(var ii=obj.length-1,choice;choice=obj[ii];ii--) {
+        text_choices=MotaActionBlocks['levelCase'].xmlText([
+          MotaActionBlocks['evalString_e'].xmlText([choice.need]),choice.title,this.parseList(choice.action),text_choices]);
+      }
+      return MotaActionBlocks['level_m'].xmlText([text_choices]);
+
     case 'shop':
       var buildsub = function(obj,parser,next){
         var text_choices = null;
@@ -1761,7 +1904,7 @@ ActionParser.prototype.parseAction = function() {
     case "autoText": // 自动剧情文本
       data.time=this.isset(data.time)?data.time:MotaActionBlocks['autoText_s'].fieldDefault[3];
       this.next = MotaActionBlocks['autoText_s'].xmlText([
-        '','','',data.time,this.EvalString(data.text),this.next]);
+        '','','',data.time||0,this.EvalString(data.text),this.next]);
       break;
     case "comment": // 注释
       this.next = MotaActionBlocks['comment_s'].xmlText([data.text,this.next]);
@@ -1770,9 +1913,10 @@ ActionParser.prototype.parseAction = function() {
       var setTextfunc = function(a){return a?JSON.stringify(a).slice(1,-1):null;}
       data.title=setTextfunc(data.title);
       data.text=setTextfunc(data.text);
-      data.background=setTextfunc(data.background);
+      if (!/^\w+\.png$/.test(data.background))
+        data.background=setTextfunc(data.background);
       this.next = MotaActionBlocks['setText_s'].xmlText([
-        data.position,data.offset,data.title,data.text,data.background,data.bold,data.titlefont,data.textfont,data.time,this.next]);
+        data.position,data.offset,data.title,data.text,data.background,data.bold,data.titlefont,data.textfont,data.time||0,this.next]);
       break;
     case "tip":
       this.next = MotaActionBlocks['tip_s'].xmlText([
@@ -1788,7 +1932,7 @@ ActionParser.prototype.parseAction = function() {
         y_str.push(t[1]);
       })
       this.next = MotaActionBlocks['show_s'].xmlText([
-        x_str.join(','),y_str.join(','),data.floorId||'',data.time||0,this.next]);
+        x_str.join(','),y_str.join(','),data.floorId||'',data.time||0,data.async||false,this.next]);
       break;
     case "hide": // 消失
       data.loc=data.loc||[];
@@ -1800,7 +1944,7 @@ ActionParser.prototype.parseAction = function() {
         y_str.push(t[1]);
       })
       this.next = MotaActionBlocks['hide_s'].xmlText([
-        x_str.join(','),y_str.join(','),data.floorId||'',data.time||0,this.next]);
+        x_str.join(','),y_str.join(','),data.floorId||'',data.time||0,data.async||false,this.next]);
       break;
     case "setBlock": // 设置图块
       data.loc=data.loc||['',''];
@@ -1867,22 +2011,22 @@ ActionParser.prototype.parseAction = function() {
     case "move": // 移动事件
       data.loc=data.loc||['',''];
       this.next = MotaActionBlocks['move_s'].xmlText([
-        data.loc[0],data.loc[1],data.time||0,data.keep,this.StepString(data.steps),this.next]);
+        data.loc[0],data.loc[1],data.time||0,data.keep||false,data.async||false,this.StepString(data.steps),this.next]);
       break;
     case "moveHero":
       this.next = MotaActionBlocks['moveHero_s'].xmlText([
-        data.time||0,this.StepString(data.steps),this.next]);
+        data.time||0,data.async||false,this.StepString(data.steps),this.next]);
       break;
     case "jump": // 跳跃事件
       data.from=data.from||['',''];
       data.to=data.to||['',''];
       this.next = MotaActionBlocks['jump_s'].xmlText([
-        data.from[0],data.from[1],data.to[0],data.to[1],data.time||0,data.keep,this.next]);
+        data.from[0],data.from[1],data.to[0],data.to[1],data.time||0,data.keep||false,data.async||false,this.next]);
       break;
     case "jumpHero": // 跳跃勇士
       data.loc=data.loc||['','']
       this.next = MotaActionBlocks['jumpHero_s'].xmlText([
-        data.loc[0],data.loc[1],data.time||0,this.next]);
+        data.loc[0],data.loc[1],data.time||0,data.async||false,this.next]);
       break;
     case "changeFloor": // 楼层转换
       data.loc=data.loc||['','']
@@ -1910,8 +2054,8 @@ ActionParser.prototype.parseAction = function() {
       this.next = MotaActionBlocks['animate_s'].xmlText([
         data.name,animate_loc,data.async||false,this.next]);
       break;
-    case "viberate": // 画面震动
-      this.next = MotaActionBlocks['viberate_s'].xmlText([data.time||0, data.async||false, this.next]);
+    case "vibrate": // 画面震动
+      this.next = MotaActionBlocks['vibrate_s'].xmlText([data.time||0, data.async||false, this.next]);
       break;
     case "showImage": // 显示图片
       if(this.isset(data.name)){
@@ -1925,10 +2069,10 @@ ActionParser.prototype.parseAction = function() {
     case "animateImage": // 显示图片
       if(data.action == 'show'){
         this.next = MotaActionBlocks['animateImage_0_s'].xmlText([
-          data.name,data.loc[0],data.loc[1],data.time,data.keep||false,data.async||false,this.next]);
+          data.name,data.loc[0],data.loc[1],data.time||0,data.keep||false,data.async||false,this.next]);
       } else if (data.action == 'hide') {
         this.next = MotaActionBlocks['animateImage_1_s'].xmlText([
-          data.name,data.loc[0],data.loc[1],data.time,data.keep||false,data.async||false,this.next]);
+          data.name,data.loc[0],data.loc[1],data.time||0,data.keep||false,data.async||false,this.next]);
       }
       break;
     case "showGif": // 显示动图
@@ -1942,7 +2086,7 @@ ActionParser.prototype.parseAction = function() {
         break;
     case "moveImage": // 移动图片
       this.next = MotaActionBlocks['moveImage_0_s'].xmlText([
-        data.name, data.from[0], data.from[1], data.to[0], data.to[1], data.time, data.keep||false, data.async||false, this.next
+        data.name, data.from[0], data.from[1], data.to[0], data.to[1], data.time||0, data.keep||false, data.async||false, this.next
       ]);
       break;
     case "setFg": // 颜色渐变
@@ -2003,7 +2147,7 @@ ActionParser.prototype.parseAction = function() {
       break
     case "setVolume":
       this.next = MotaActionBlocks['setVolume_s'].xmlText([
-        data.value, data.time, data.async||false, this.next]);
+        data.value, data.time||0, data.async||false, this.next]);
       break
     case "setValue":
       this.next = MotaActionBlocks['setValue_s'].xmlText([
@@ -2014,6 +2158,14 @@ ActionParser.prototype.parseAction = function() {
     case "setFloor":
       this.next = MotaActionBlocks['setFloor_s'].xmlText([
         data.name, data.floorId||null, data.value, this.next]);
+      break;
+    case "setGlobalAttribute":
+      this.next = MotaActionBlocks['setGlobalAttribute_s'].xmlText([
+        data.name, data.value, this.next]);
+      break;
+    case "setGlobalValue":
+      this.next = MotaActionBlocks['setGlobalValue_s'].xmlText([
+        data.name, data.value, this.next]);
       break;
     case "input":
       this.next = MotaActionBlocks['input_s'].xmlText([
@@ -2074,10 +2226,18 @@ ActionParser.prototype.parseAction = function() {
       var func = data["function"];
       func=func.split('{').slice(1).join('{').split('}').slice(0,-1).join('}').trim().split('\n').join('\\n');
       this.next = MotaActionBlocks['function_s'].xmlText([
-        func,this.next]);
+        data.async||false,func,this.next]);
       break;
     case "update":
       this.next = MotaActionBlocks['update_s'].xmlText([
+        this.next]);
+      break;
+    case "showStatusBar":
+      this.next = MotaActionBlocks['showStatusBar_s'].xmlText([
+        this.next]);
+      break;
+    case "hideStatusBar":
+      this.next = MotaActionBlocks['hideStatusBar_s'].xmlText([
         this.next]);
       break;
     case "updateEnemys":
@@ -2086,10 +2246,14 @@ ActionParser.prototype.parseAction = function() {
       break;
     case "sleep": // 等待多少毫秒
       this.next = MotaActionBlocks['sleep_s'].xmlText([
-        data.time,this.next]);
+        data.time||0,this.next]);
       break;
     case "wait": // 等待用户操作
       this.next = MotaActionBlocks['wait_s'].xmlText([
+        this.next]);
+      break;
+    case "waitAsync": // 等待所有异步事件执行完毕
+      this.next = MotaActionBlocks['waitAsync_s'].xmlText([
         this.next]);
       break;
     case "revisit": // 立刻重新执行该事件

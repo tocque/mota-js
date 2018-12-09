@@ -1,4 +1,4 @@
-data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d = 
+var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d = 
 {
 	"main": {
 		"floorIds": [
@@ -9,7 +9,8 @@ data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"MT0"
 		],
 		"images": [
-			"bg.jpg"
+			"bg.jpg",
+			"winskin.png"
 		],
 		"tilesets": [],
 		"animates": [
@@ -63,12 +64,13 @@ data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"statusBarColor": "white",
 		"hardLabelColor": "red",
 		"floorChangingBackground": "black",
-		"floorChangingTextColor": "white"
+		"floorChangingTextColor": "white",
+		"font": "Verdana"
 	},
 	"firstData": {
 		"title": "魔塔样板",
 		"name": "template",
-		"version": "Ver 2.5.1",
+		"version": "Ver 2.5.2",
 		"floorId": "sample0",
 		"hero": {
 			"name": "阳光",
@@ -101,6 +103,126 @@ data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"flags": {},
 			"steps": 0
 		},
+		"startCanvas": [
+			{
+				"type": "comment",
+				"text": "在这里可以用事件来自定义绘制标题界面的背景图等"
+			},
+			{
+				"type": "showImage",
+				"name": "bg.jpg",
+				"loc": [
+					0,
+					0
+				]
+			},
+			{
+				"type": "comment",
+				"text": "给用户提供选择项，这里简单的使用了choices事件"
+			},
+			{
+				"type": "comment",
+				"text": "也可以贴按钮图然后使用循环处理+等待操作来完成"
+			},
+			{
+				"type": "choices",
+				"choices": [
+					{
+						"text": "开始游戏",
+						"action": [
+							{
+								"type": "comment",
+								"text": "检查bgm状态，下同"
+							},
+							{
+								"type": "function",
+								"function": "function(){\ncore.control.checkBgm()\n}"
+							},
+							{
+								"type": "if",
+								"condition": "core.flags.startDirectly",
+								"true": [
+									{
+										"type": "comment",
+										"text": "直接开始游戏，设置初始化数据"
+									},
+									{
+										"type": "function",
+										"function": "function(){\ncore.events.setInitData('')\n}"
+									}
+								],
+								"false": [
+									{
+										"type": "comment",
+										"text": "动态生成难度选择项"
+									},
+									{
+										"type": "function",
+										"function": "function(){\nvar choices = [];\nmain.levelChoose.forEach(function (one) {\n\tchoices.push({\"text\": one[0], \"action\": [\n\t\t{\"type\": \"function\", \"function\": \"function() { core.status.hard = '\"+one[1]+\"'; core.events.setInitData('\"+one[1]+\"'); }\"}\n\t]});\n})\ncore.insertAction({\"type\": \"choices\", \"choices\": choices});\n}"
+									}
+								]
+							},
+							{
+								"type": "showImage"
+							},
+							{
+								"type": "comment",
+								"text": "成功选择难度"
+							}
+						]
+					},
+					{
+						"text": "读取存档",
+						"action": [
+							{
+								"type": "function",
+								"function": "function(){\ncore.control.checkBgm()\n}"
+							},
+							{
+								"type": "showImage"
+							},
+							{
+								"type": "comment",
+								"text": "这段代码会结束事件，打开读档页面，读取存档或重新开始"
+							},
+							{
+								"type": "function",
+								"function": "function(){\ncore.insertAction([{\"type\": \"exit\"}], null, null, function() {\n\tcore.status.played = false;\n\tcore.load();\n})\n}"
+							},
+							{
+								"type": "comment",
+								"text": "不管读档有没有成功，都会重新开始，这个地方不会被执行到"
+							}
+						]
+					},
+					{
+						"text": "回放录像",
+						"action": [
+							{
+								"type": "function",
+								"function": "function(){\ncore.control.checkBgm()\n}"
+							},
+							{
+								"type": "comment",
+								"text": "这段代码会结束事件，选择录像文件，播放录像或重新开始"
+							},
+							{
+								"type": "function",
+								"function": "function(){\ncore.insertAction([{\"type\": \"exit\"}], null, null, function() {\n\tcore.restart();\n\tcore.chooseReplayFile();\n})\n}"
+							},
+							{
+								"type": "comment",
+								"text": "不管录像有没有成功，都会重新开始，这个地方不会被执行到"
+							}
+						]
+					}
+				]
+			},
+			{
+				"type": "comment",
+				"text": "接下来会执行startText中的事件"
+			}
+		],
 		"startText": [
 			"Hi，欢迎来到 HTML5 魔塔样板！\n\n本样板由艾之葵制作，可以让你在不会写任何代码\n的情况下也能做出属于自己的H5魔塔！",
 			"这里游戏开始时的剧情。\n定义在data.js的startText处。\n\n你可以在这里写上自己的内容。",
@@ -162,15 +284,41 @@ data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			}
 		],
 		"levelUp": [
-			{},
 			{
-				"need": 20,
-				"name": "第二级",
-				"effect": "status:hp+=2*(status:atk+status:def);status:atk+=10;status:def+=10"
+				"need": "0",
+				"title": "",
+				"action": [
+					{
+						"type": "comment",
+						"text": "此处是初始等级，只需填写称号"
+					}
+				]
 			},
 			{
-				"need": 40,
-				"effect": "function () {\r\n\t\t\tcore.insertAction(\"恭喜升级！\");\r\n\t\t\tcore.status.hero.hp *= 2;\r\n\t\t\tcore.status.hero.atk += 100;\r\n\t\t\tcore.status.hero.def += 100;\r\n\t\t}"
+				"need": "20",
+				"title": "第二级",
+				"action": [
+					{
+						"type": "setValue",
+						"name": "status:atk",
+						"value": "status:atk+10"
+					},
+					{
+						"type": "setValue",
+						"name": "status:def",
+						"value": "status:def+10"
+					}
+				]
+			},
+			{
+				"need": "40",
+				"title": "",
+				"action": [
+					{
+						"type": "tip",
+						"text": "恭喜升级"
+					}
+				]
 			}
 		]
 	},
@@ -185,13 +333,13 @@ data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"bluePotion": 250,
 		"yellowPotion": 500,
 		"greenPotion": 800,
-		"moneyPocket": 500,
 		"breakArmor": 0.9,
 		"counterAttack": 0.1,
 		"purify": 3,
 		"hatred": 2,
-		"maxValidHp": null,
-		"animateSpeed": 300
+		"moveSpeed": 100,
+		"animateSpeed": 300,
+		"floorChangeTime": 800,
 	},
 	"flags": {
 		"enableFloor": true,
@@ -215,12 +363,12 @@ data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"bigKeyIsBox": false,
 		"equipment": false,
 		"equipboxButton": false,
-		"equipPercentage": false,
 		"enableAddPoint": false,
 		"enableNegativeDamage": false,
 		"hatredDecrease": true,
 		"betweenAttackCeil": false,
 		"useLoop": false,
+		"startUsingCanvas": false,
 		"startDirectly": false,
 		"canOpenBattleAnimate": true,
 		"showBattleAnimateConfirm": false,

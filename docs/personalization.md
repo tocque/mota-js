@@ -1,6 +1,6 @@
 # 个性化
 
-?> 目前版本**v2.5.1**，上次更新时间：* {docsify-updated} *
+?> 目前版本**v2.5.2**，上次更新时间：* {docsify-updated} *
 
 有时候只靠样板本身可能是不够的。我们需要一些个性化、自定义的素材，道具效果，怪物属性，等等。
 
@@ -17,10 +17,10 @@ HTML5魔塔是使用画布（canvas）来绘制，存在若干个图层，它们
 - fg：前景层；绘制前景图层素材fgmap，和前景贴图
 - damage：显伤层；主要用来绘制怪物显伤和领域显伤
 - animate：动画层；主要用来绘制动画。showImage事件绘制的图片也是在这一层。
-- image：图片层；主要用来绘制显示图片
 - weather：天气层；主要用来绘制天气（雨/雪）
 - route：路线层；主要用来绘制勇士的行走路线图，也用来绘制图块的淡入/淡出效果，图块的移动等。
 - curtain：色调层；用来控制当前楼层的画面色调
+- image：图片层；主要用来绘制显示图片；该层之所以在curtain层上是为了可以在全黑时贴大头像图
 - ui：UI层；用来绘制一切UI窗口，如剧情文本、怪物手册、楼传器、系统菜单等等
 - data：数据层；用来绘制一些顶层的或更新比较快的数据，如左上角的提示，战斗界面中数据的变化等等。
 
@@ -51,7 +51,7 @@ HTML5魔塔是使用画布（canvas）来绘制，存在若干个图层，它们
 
 在地图编辑器中绘图时，下拉框选中“背景层”或“前景层”即可在对应的图层上绘图。
 
-其中背景层和前景层仅为静态绘图（不支持动画），但可以使用自动元件（autotile）。
+其中背景层和前景层可以使用任何素材，以及使用自动元件（autotile）。
 
 可以使用`showBgFgMap`, `hideBgFgMap`, `setBgFgBlock`等事件对背景和前景图层进行操作。
 
@@ -335,6 +335,7 @@ function (enemy, hero_hp, hero_atk, hero_def, hero_mdef, x, y, floorId) {
         var vampireDamage = hero_hp * enemy.value;
 
         // 如果有神圣盾免疫吸血等可以在这里写
+        // 也可以用hasItem或hasEquip来判断装备
         if (core.hasFlag("shield5")) vampireDamage = 0; // 存在神圣盾，吸血伤害为0
 
         vampireDamage = Math.floor(vampireDamage) || 0;
@@ -348,11 +349,13 @@ function (enemy, hero_hp, hero_atk, hero_def, hero_mdef, x, y, floorId) {
 ```
 3. 免疫领域、夹击、阻击效果：在2.4.1之后，可以直接将flag:no_zone设为true来免疫领域效果，其他几个同理。
 ``` js
-// 同样写在道具的itemEffect中
-core.setFlag("no_zone", true); // 免疫领域
-core.setFlag("no_snipe", true); // 免疫阻击
-core.setFlag("no_laser", true);  // 免疫激光
-core.setFlag("no_betweenAttack", true); // 免疫夹击
+// 写在获得道具后事件
+[
+    {"type": "setValue", "name": "no_zone", "value": "true"}, // 免疫领域
+    {"type": "setValue", "name": "no_snipe", "value": "true"}, // 免疫阻击
+    {"type": "setValue", "name": "no_laser", "value": "true"}, // 免疫激光
+    {"type": "setValue", "name": "no_betweenAttack", "value": "true"}, // 免疫夹击
+]
 ```
 4. 如果有更高的需求，例如想让吸血效果变成一半，则还是在上面这些地方进行对应的修改即可。
 
@@ -557,6 +560,39 @@ this.myfunc = function(x) {
 
 通过这种，将脚本和自定义事件混用的方式，可以达到和RM中公共事件类似的效果，即一个调用触发一系列事件。
 -->
+
+## 标题界面事件化
+
+从V2.5.3开始，我们可以将标题界面的绘制和游戏开始用事件来完成。可以通过绘制画布、
+
+全塔属性，flags中的startUsingCanvas可以决定是否开启标题界面事件化。
+
+然后就可以使用“事件流”的形式来绘制标题界面、提供选项等等。
+
+在这里可以调用任意事件。例如，可以贴若干个图，可以事件切换楼层到某个剧情层再执行若干事件，等等。
+
+关于选项，样板默认给出的是最简单的choices事件；你也可以使用贴按钮图，循环处理+等待操作来定制自己的按钮点击效果。
+
+!> 开始游戏、读取存档、录像回放的效果已经默认给出，请不要修改或删减这些内容，以免出现问题。
+
+标题界面事件全部处理完后，将再继续执行startText事件。
+
+## 手机端按键模式
+
+从V2.5.3以后，我们可以给手机端增加按键了，这样将非常有利于技能的释放。
+
+当用户在竖屏模式下点击工具栏，就会在工具栏按钮和快捷键模式之间进行切换。
+
+切换到快捷键模式后，可以点1-7，分别等价于在电脑端按键1-7。
+
+可以在脚本编辑的onKeyUp中定义每个快捷键的使用效果，比如使用道具或释放技能等。
+
+默认值下，1使用破，2使用炸，3使用飞，4使用其他存在的道具，5-7未定义。可以相应修改成自己的效果。
+
+也可以替换icons.png中的对应图标，以及修改main.js中`main.statusBar.image.btn1~7`中的onclick事件来自定义按钮和对应按键。
+
+非竖屏模式下、回放录像中、隐藏状态栏中，将不允许进行切换。
+
 ## 自定义状态栏（新增显示项）
 
 在V2.2以后，我们可以自定义状态栏背景图（全塔属性 - statusLeftBackground）等等。
@@ -574,7 +610,7 @@ this.myfunc = function(x) {
 </div>
 ```
 3. 在editor.html中的statusBar（323行起），仿照第二点同样添加；这一项如果不进行则会地图编辑器报错。editor-mobile.html同理。
-4. 使用便捷PS工具，打开icons.png，新增一行并将魔力的图标P上去；记下其索引比如30（从0开始数）。
+4. 使用便捷PS工具，打开icons.png，新增一行并将魔力的图标P上去；记下其索引比如37（从0开始数）。
 5. 在main.js的this.statusBar中增加图片、图标和内容的定义。
 ``` js
 this.statusBar = {
@@ -817,8 +853,6 @@ if (core.flags.enableSkill) {
     ```
 3. 在脚本编辑 - setInitData中加上`core.plugin.initHeros()`来初始化新勇士。（写在`core.events.afterLoadData()`后，反大括号之前。）
 4. 如果需要切换角色（包括事件、道具或者快捷键等），可以直接调用自定义JS脚本：`core.plugin.changeHero();`进行切换。也可以指定参数调用`core.plugin.changeHero(1)`来切换到某个具体的勇士上。
-
-!> 如果道具不共用，需要在初始定义那里写 `'items': {"keys": {"yellowKey": 0, "blueKey": 0, "redKey": 0}, "tools": {}, "constants": {}}`
 
 ## 根据难度分歧来自定义地图
 
