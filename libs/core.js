@@ -2,6 +2,8 @@
  * 初始化 start
  */
 
+"use strict";
+
 function core() {
     this.material = {
         'animates': {},
@@ -27,7 +29,6 @@ function core() {
         'onDownInterval': null,
     }
     this.animateFrame = {
-        'background': null,
         'globalAnimate': false,
         'globalTime': null,
         'boxTime': null,
@@ -40,7 +41,8 @@ function core() {
             'level': 0,
             'nodes': [],
             'data': null,
-        }
+        },
+        "asyncId": {}
     }
     this.musicStatus = {
         'audioContext': null, // WebAudioContext
@@ -72,6 +74,8 @@ function core() {
     this.domStyle = {
         styles: [],
         scale: 1.0,
+        toolbarBtn: false,
+        showStatusBar: true,
     }
     this.bigmap = {
         canvas: ["bg", "event", "event2", "fg", "damage", "route"],
@@ -157,6 +161,17 @@ function core() {
             "bold": false,
             "time": 0,
         },
+        "globalAttribute": {
+            "statusLeftBackground": main.statusLeftBackground || "url(project/images/ground.png) repeat",
+            "statusTopBackground": main.statusTopBackground || "url(project/images/ground.png) repeat",
+            "toolsBackground": main.toolsBackground || "url(project/images/ground.png) repeat",
+            "borderColor": main.borderColor || "white",
+            "statusBarColor": main.statusBarColor || "white",
+            "hardLabelColor": main.hardLabelColor || "red",
+            "floorChangingBackground": main.floorChangingBackground || "black",
+            "floorChangingTextColor": main.floorChangingTextColor || "white",
+            "font": main.font || "Verdana"
+        },
         'curtainColor': null,
         'openingDoor': null,
         'isSkiing': false,
@@ -164,7 +179,7 @@ function core() {
         // 动画
         'globalAnimateObjs': [],
         'boxAnimateObjs': [],
-        'autotileAnimateObjs': {},
+        'autotileAnimateObjs': {"status": 0, "blocks": [], "map": null, "bgmap": null, "fgmap": null},
         'animateObjs': [],
     };
     this.status = {};
@@ -307,6 +322,9 @@ core.prototype.init = function (coreData, callback) {
     core.flags.displayExtraDamage = core.getLocalStorage('extraDamage', core.flags.displayExtraDamage);
 
     core.material.ground = new Image();
+    core.material.ground.onload = function () {
+        core.material.groundPattern = core.canvas.ui.createPattern(core.material.ground, "repeat");
+    }
     core.material.ground.src = "project/images/ground.png";
 
     core.bigmap.tempCanvas = document.createElement('canvas').getContext('2d');
@@ -1022,6 +1040,12 @@ core.prototype.arrayToRGB = function (color) {
     return core.utils.arrayToRGB(color);
 }
 
+////// 数组转RGBA //////
+core.prototype.arrayToRGBA = function (color) {
+    return core.utils.arrayToRGBA(color);
+}
+
+
 ////// 作弊 //////
 core.prototype.debug = function() {
     core.control.debug();
@@ -1237,6 +1261,12 @@ core.prototype.hasFlag = function(flag) {
     return core.control.hasFlag(flag);
 }
 
+////// 删除某个自定义变量或flag //////
+core.prototype.removeFlag = function(flag) {
+    core.control.removeFlag(flag);
+}
+
+////// 执行下一个自定义事件 //////
 core.prototype.doAction = function() {
     core.events.doAction();
 }

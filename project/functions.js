@@ -1,4 +1,4 @@
-functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a = 
+var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a = 
 {
     "events": {
         "initGame": function() {
@@ -59,7 +59,7 @@ functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	core.stopReplay();
 	core.waitHeroToStop(function() {
 		core.removeGlobalAnimate(0,0,true);
-		core.clearMap('all'); // 清空全地图
+		core.clearMap('all'); core.clearMap('curtain'); // 清空全地图
 		// 请注意：
 		// 成绩统计时是按照hp进行上传并排名，因此光在这里改${status:hp}是无效的
 		// 如需按照其他的的分数统计方式，请先将hp设置为你的得分
@@ -87,9 +87,15 @@ functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
         "afterChangeFloor": function (floorId, fromLoad) {
 	// 转换楼层结束的事件
 	// floorId是切换到的楼层；fromLoad若为true则代表是从读档行为造成的楼层切换
-	if (!core.hasFlag("visited_"+floorId)) {
+	var visited = core.getFlag("__visited__", []);
+	if (visited.indexOf(floorId)===-1) {
 		core.insertAction(core.floors[floorId].firstArrive);
-		core.setFlag("visited_"+floorId, true);
+		visited.push(floorId);
+		core.setFlag("__visited__", visited);
+	}
+	// 每次抵达楼层时执行的事件
+	if (!fromLoad) {
+		core.insertAction(core.floors[floorId].eachArrive);
 	}
 },
         "addPoint": function (enemy) {
@@ -507,6 +513,7 @@ functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		var vampire_damage = hero_hp * enemy.value;
 
 		// 如果有神圣盾免疫吸血等可以在这里写
+		// 也可以用hasItem和hasEquip来判定装备
 		// if (core.hasFlag('shield5')) vampire_damage = 0;
 
 		vampire_damage = Math.floor(vampire_damage) || 0;
@@ -658,6 +665,21 @@ functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		case 72: // H：打开帮助页面
 			core.ui.drawHelp();
 			break;
+		case 78: // N：重新开始
+			core.status.event.selection=1;
+			core.ui.drawConfirmBox("你确定要返回标题页面吗？", function () {
+				core.ui.closePanel();
+				core.restart();
+			}, function () {
+				core.ui.closePanel();
+			});
+			break;
+		case 79: // O：查看工程
+			window.open(core.platform.isPC?"editor.html":"editor-mobile.html", "_blank");
+			break;
+		case 80: // P：查看评论
+			window.open("/score.php?name="+core.firstData.name+"&num=10", "_blank");
+            break;
 		case 49: // 快捷键1: 破
 			if (core.hasItem('pickaxe')) {
 				if (core.canUseItem('pickaxe')) {
@@ -817,7 +839,7 @@ functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 	// 进阶
 	if (core.flags.enableLevelUp && core.status.hero.lv<core.firstData.levelUp.length) {
-		var need = core.firstData.levelUp[core.status.hero.lv].need;
+		var need = core.calValue(core.firstData.levelUp[core.status.hero.lv].need);
 		if (core.flags.levelUpLeftMode)
             core.statusBar.up.innerHTML = (need - core.getStatus('experience')) || " ";
 		else
@@ -1019,8 +1041,9 @@ functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 	// 名称
 	core.canvas.ui.textAlign = "left";
-	core.fillText('ui', "HTML5 魔塔样板", text_start, top+35, "#FFD700", "bold 22px Verdana");
-	core.fillText('ui', "版本： "+core.firstData.version, text_start, top + 80, "#FFFFFF", "bold 17px Verdana");
+	var globalFont = (core.status.globalAttribute||core.initStatus.globalAttribute).font;
+	core.fillText('ui', "HTML5 魔塔样板", text_start, top+35, "#FFD700", "bold 22px "+globalFont);
+	core.fillText('ui', "版本： "+core.firstData.version, text_start, top + 80, "#FFFFFF", "bold 17px "+globalFont);
 	core.fillText('ui', "作者： 艾之葵", text_start, top + 112);
 	core.fillText('ui', 'HTML5魔塔交流群：539113091', text_start, top+112+32);
 	// TODO: 写自己的“关于”页面，每次增加32像素即可
@@ -1034,13 +1057,22 @@ functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 	// 检查当前是否处于游戏开始状态
 	if (!core.isPlaying()) return;
-	
+
+	// 执行当前楼层的并行事件处理
+	if (core.isset(core.status.floorId)) {
+		try {
+			eval(core.floors[core.status.floorId].parallelDo);
+		} catch (e) {
+			console.log(e);
+        }
+	}
+
 	// 下面是一个并行事件开门的样例
 	/*
 	// 如果某个flag为真
 	if (core.hasFlag("xxx")) {
 		// 千万别忘了将该flag清空！否则下次仍然会执行这段代码。
-		core.setFlag("xxx", false);
+		core.removeFlag("xxx");
 		// 使用insertAction来插入若干自定义事件执行
 		core.insertAction([
 			{"type":"openDoor", "loc":[0,0], "floorId": "MT0"}
@@ -1048,7 +1080,8 @@ functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		// 也可以写任意其他的脚本代码
 	}
 	 */
-	
+
+
 },
         "plugin": function () {
 	////// 插件编写，可以在这里写自己额外需要执行的脚本 //////
@@ -1092,14 +1125,11 @@ functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		ctx.msImageSmoothingEnabled = false;
 		ctx.imageSmoothingEnabled = false;
 		core.clearMap('curtain');
-		core.setOpacity('curtain', 1);
-		core.setAlpha('curtain', 1);
 
 		// 绘制色调层，默认不透明度
 		if (!core.isset(color)) color = 0.9;
 		if (typeof color == "number") color = [0,0,0,color];
-		core.fillRect('curtain', 0, 0, 416, 416,
-			'rgba('+color[0]+','+color[1]+','+color[2]+','+core.clamp(color[3],0,1)+')');
+		core.fillRect('curtain', 0, 0, 416, 416, core.arrayToRGBA(color));
 
 		// 绘制每个灯光效果
 		if (!core.isset(lights) || lights.length==0) return;

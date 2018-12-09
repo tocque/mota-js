@@ -131,10 +131,17 @@ editor_file = function (editor, callback) {
         };
         var currData=editor.currentFloorData;
         var saveStatus = document.getElementById('newMapStatus').checked;
+
+        var title = saveStatus?currData.title:"新建楼层";
+        var name = saveStatus?currData.name:"0";
+        if (/^mt\d+$/i.test(saveFilename)) {
+            name = saveFilename.substring(2);
+            title = "主塔 "+name+" 层";
+        }
         editor.currentFloorData = {
             floorId: saveFilename,
-            title: saveStatus?currData.title:"新建楼层",
-            name: saveStatus?currData.name:"0",
+            title: title,
+            name: name,
             width: parseInt(document.getElementById('newMapWidth').value),
             height: parseInt(document.getElementById('newMapHeight').value),
             canFlyTo: saveStatus?currData.canFlyTo:true,
@@ -149,6 +156,8 @@ editor_file = function (editor, callback) {
             color: saveStatus?currData.color:null,
             weather: saveStatus?currData.weather:null,
             firstArrive: [],
+            eachArrive: [],
+            parallelDo: "",
             events: {},
             changeFloor: {},
             afterBattle: {},
@@ -797,7 +806,7 @@ editor_file = function (editor, callback) {
             actionList.forEach(function (value) {
                 eval("icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1" + value[1] + '=' + JSON.stringify(value[2]));
             });
-            var datastr = 'icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 = \n';
+            var datastr = 'var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 = \n';
             datastr += JSON.stringify(icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1, null, '\t');
             fs.writeFile('project/icons.js', encode(datastr), 'base64', function (err, data) {
                 callback(err);
@@ -808,7 +817,7 @@ editor_file = function (editor, callback) {
             actionList.forEach(function (value) {
                 eval("maps_90f36752_8815_4be8_b32b_d7fad1d0542e" + value[1] + '=' + JSON.stringify(value[2]));
             });
-            var datastr = 'maps_90f36752_8815_4be8_b32b_d7fad1d0542e = \n';
+            var datastr = 'var maps_90f36752_8815_4be8_b32b_d7fad1d0542e = \n';
             //datastr+=JSON.stringify(maps_90f36752_8815_4be8_b32b_d7fad1d0542e,null,4);
 
             var emap = {};
@@ -833,7 +842,7 @@ editor_file = function (editor, callback) {
             actionList.forEach(function (value) {
                 eval("items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a" + value[1] + '=' + JSON.stringify(value[2]));
             });
-            var datastr = 'items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a = \n';
+            var datastr = 'var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a = \n';
             datastr += JSON.stringify(items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a, null, '\t');
             fs.writeFile('project/items.js', encode(datastr), 'base64', function (err, data) {
                 callback(err);
@@ -844,7 +853,7 @@ editor_file = function (editor, callback) {
             actionList.forEach(function (value) {
                 eval("enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80" + value[1] + '=' + JSON.stringify(value[2]));
             });
-            var datastr = 'enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 = \n';
+            var datastr = 'var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 = \n';
             var emap = {};
             var estr = JSON.stringify(enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80, function (k, v) {
                 if (v.hp != null) {
@@ -868,7 +877,7 @@ editor_file = function (editor, callback) {
             });
             if (data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d.main.floorIds.indexOf(data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d.firstData.floorId) < 0)
                 data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d.firstData.floorId = data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d.main.floorIds[0];
-            var datastr = 'data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d = \n';
+            var datastr = 'var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d = \n';
             datastr += JSON.stringify(data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d, null, '\t');
             fs.writeFile('project/data.js', encode(datastr), 'base64', function (err, data) {
                 callback(err);
@@ -883,7 +892,7 @@ editor_file = function (editor, callback) {
             for (var id_ in fmap) {
                 fraw = fraw.replace('"' + id_ + '"', fmap[id_])
             }
-            var datastr = 'functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a = \n';
+            var datastr = 'var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a = \n';
             datastr += fraw;
             fs.writeFile('project/functions.js', encode(datastr), 'base64', function (err, data) {
                 callback(err);
