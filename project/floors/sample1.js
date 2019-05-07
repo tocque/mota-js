@@ -11,7 +11,7 @@ main.floors.sample1=
         0,
         0,
         "bg.jpg",
-        false
+        0
     ]
 ],
 "weather": [
@@ -151,7 +151,7 @@ main.floors.sample1=
             "type": "hide"
         },
         {
-            "type": "setFg",
+            "type": "setCurtain",
             "color": [
                 0,
                 0,
@@ -184,7 +184,7 @@ main.floors.sample1=
     "2,11": [
         "\t[杰克,thief]喂！醒醒！快醒醒！",
         {
-            "type": "setFg",
+            "type": "setCurtain",
             "time": 1500
         },
         "\t[hero]额，我这是在什么地方？",
@@ -205,10 +205,8 @@ main.floors.sample1=
             "type": "move",
             "time": 750,
             "steps": [
-                {
-                    "direction": "right",
-                    "value": 2
-                },
+                "right",
+                "right",
                 "down"
             ]
         },
@@ -766,10 +764,15 @@ main.floors.sample1=
             ],
             "false": []
         }
-    ],
-    "10,12": null
+    ]
 },
 "afterGetItem": {},
 "afterOpenDoor": {},
 "cannotMove": {},
+"bgmap": [
+
+],
+"fgmap": [
+
+],
 }
