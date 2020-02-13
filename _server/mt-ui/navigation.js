@@ -146,14 +146,14 @@ export const MtView = {
     name: "mt-view",
     template: /* HTML */`
     <div class="mt-view">
-        <mt-tabs :tabs="tabs" allowUnchose ref="tabs" @switch="switchTab">
+        <mt-tabs :tabs="tabs" ref="tabs" @switch="switchTab">
             <template #tab="{ tab }">
                 <slot name="tab">
                     <mt-icon :icon="tab.icon" :size="18"></mt-icon>
                     <span>{{ tab.label }}</span>
                     <mt-icon 
                         :icon="tab.editted ? 'circle-filled' : 'close'"
-                        @click="closeTab(tab)" :size="18"
+                        @click.stop="closeTab(tab)" :size="18"
                         class="status-icon" :class="{ editted: tab.editted }"
                     ></mt-icon>
                 </slot>
@@ -174,8 +174,11 @@ export const MtView = {
         }
     },
     methods: {
+        getKey(tab) {
+            return tab.type + tab.id;
+        },
         openTab(tab) {
-            let key = tab.type + tab.id;
+            const key = this.getKey(tab);
             if (!this.keys[key]) {
                 this.keys[key] = tab;
                 this.insertTabAfter(tab, this.tabNow);
@@ -187,7 +190,7 @@ export const MtView = {
             this.tabNow = tab;
         },
         openTabByKey(key) {
-            this.openTab(this.keys[key]);
+            if (this.keys[key]) this.openTab(this.keys[key]);
         },
         insertTabAfter(tab, after) {
             const index = after ? this.tabs.indexOf(after) + 1 : 0;
@@ -199,6 +202,16 @@ export const MtView = {
             if (handler.prevent) return;
             const index = this.tabs.indexOf(tab);
             this.tabs.splice(index, 1);
+            const key = this.getKey(tab);
+            delete this.keys[key];
+            if (this.tabs.length == 0) {
+                this.$refs.tabs.chosen = null;
+                this.$emit('switch', {});
+            } else {
+                if (this.tabs.length == index) {
+                    this.openTab(this.tabs[index-1]);
+                } else this.openTab(this.tabs[index]);
+            }
         },
         closeAll() {
             const handler = {};
@@ -207,6 +220,8 @@ export const MtView = {
                 if (handler.prevent) return;
             }
             Vue.$set(this.tabs, []);
+            this.$refs.tabs.chosen = null;
+            this.$emit('switch', {});
         }
     },
     components: { MtIcon },

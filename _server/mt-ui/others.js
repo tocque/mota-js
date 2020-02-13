@@ -6,18 +6,17 @@ export const MtIcon = {
     functional: true,
     render(h, ctx) {
         const size = ctx.props.size;
-        let style = size ? {
+        const style = size ? {
             maxWidth: size + 'px',
             maxHeight: size + 'px',
             fontSize: size + 'px'
         } : {};
-        let c = ctx.data.class instanceof Array ? ctx.data.class : [ctx.data.class];
-        return h('i', {
-            staticClass: ctx.data.staticClass,
-            class: ['mt-icon', 'codicon', 'codicon-'+ctx.props.icon, ...c],
-            attrs: ctx.attrs,
-            style,
-        })
+        let c = ctx.data.class;
+        c = c || [];
+        c = c instanceof Array ? c : [c];
+        ctx.data.class = ['mt-icon', 'codicon', 'codicon-'+ctx.props.icon, ...c];
+        ctx.data.style = Object.assign({}, ctx.data.style, style);
+        return h('i', ctx.data);
     },
-    props: ["icon", "svg", "size"]
+    props: ["icon", "size"]
 }

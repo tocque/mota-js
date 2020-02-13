@@ -27,7 +27,7 @@ export default {
             <plugin-lib @openTab="openTab"></plugin-lib>
         </mt-side>
         <div class="mid" :class="{ expend: leftCollapsed }">
-            <mt-view ref="view" @switch="switchTab" @close="closeTab">
+            <mt-view v-show="viewer" ref="view" @switch="switchTab" @close="closeTab">
             </mt-view>
             <code-editor v-show="viewer=='script'" ref="editor"
                 :active="viewer=='script'"
@@ -36,7 +36,7 @@ export default {
             <keep-alive>
                 <plugin-detail v-if="viewer=='plugin'" :info="tab.info"></plugin-detail>
             </keep-alive>
-            <div v-show="!viewer"></div>
+            <div v-show="!viewer" class="empty"></div>
         </div>
         <status-item></status-item>
     </div>
@@ -65,7 +65,7 @@ export default {
         },
         switchTab(tab) {
             this.tab = tab;
-            this.viewer = (tab || {}).type;
+            this.viewer = tab.type;
             if (this.viewer == "script") {
                 const refs = this.$refs;
                 this.$nextTick(() => {

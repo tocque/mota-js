@@ -1,8 +1,15 @@
 @import "../../css/editor_skin.less";
 
 #scriptPanel {
-    .mid.expend {
-        left: 50px;
+    .mid {
+        &.expend {
+            left: 50px;
+        }
+        .empty {
+            width: 100%;
+            height: 100%;
+            background-color: @c-main;
+        }
     }
     /* 优化展开时monaco的layout */
     .monaco-editor {
