@@ -1,55 +1,35 @@
-editor_file_wrapper = function (editor) {
-    editor_file_proto = function () {
-        /**
-         * 以 
-         * {
-         *     "floor.MT1":<obj>,
-         *     "plugins":<obj>
-         * }
-         * 的形式记录所有更改过的文件,save时写入
-         * <obj>的内容暂时还没想好
-         */
-        this.fileMark = {}
-    }
+import { createGuid } from "./editor_util.js";
 
-    // 这个函数之后挪到editor.table?
-    editor_file_proto.prototype.loadCommentjs = function (callback) {
-        var commentjs = {
-            'comment': 'comment',
-            'data.comment': 'dataComment',
-            'functions.comment': 'functionsComment',
-            'events.comment': 'eventsComment',
-            'plugins.comment': 'pluginsComment',
-        }
-        for (var key in commentjs) {
-            (function (key) {
-                var value = commentjs[key];
-                var script = document.createElement('script');
-                if (window.location.href.indexOf('_server') !== -1)
-                    script.src = key + '.js';
-                else
-                    script.src = '_server/table/' + key + '.js';
-                document.body.appendChild(script);
-                script.onload = function () {
-                    editor.file[value] = eval(key.replace('.', '_') + '_c456ea59_6018_45ef_8bcc_211a24c627dc');
-                    var loaded = Boolean(callback);
-                    for (var key_ in commentjs) {
-                        loaded = loaded && editor.file[commentjs[key_]]
-                    }
-                    if (loaded) callback();
-                }
-            })(key);
-        }
-    }
+let alertedCompress = false;
 
-    editor_file_proto.prototype.alertWhenCompress = function () {
-        if (editor.useCompress === true) {
-            editor.useCompress = 'alerted';
-            setTimeout("alert('当前游戏使用的是压缩文件,修改完成后请使用启动服务.exe->Js代码压缩工具重新压缩,或者把main.js的useCompress改成false来使用原始文件')", 1000)
-        }
+const checkCompress = function() {
+    if (editor.game.main._useCompress && !alertedCompress) {
+        editor.window.$notify.warn("当前游戏使用的是压缩文件,修改完成后请使用 启动服务.exe->Js代码压缩工具重新压缩,或者把main.js的useCompress改成false来使用原始文件", {
+            time: 12000,
+            source: `文件编辑: ${this.src}`
+        });
     }
+}
 
-    editor_file_proto.prototype.formatMap = function (mapArr, trySimplify) {
+let replacerRecord = {}
+
+export const ftools = {
+    functionProcess(data, pool) {
+        return JSON.parse(JSON.stringify(data, (_key, value) => {
+            if (typeof(value) === 'function') {
+                const guid = createGuid();
+                pool[guid] = value.toString();
+                return guid;
+            } else return value;
+        }));
+    },
+    fixByPool(data, pool) {
+        for (let guid in pool) {
+            data = data.replace(`"${guid}"`, pool[guid]);
+        }
+        return data;
+    },
+    formatMap(mapArr, trySimplify) {
         if (!mapArr || JSON.stringify(mapArr) == JSON.stringify([])) return '';
         if (trySimplify) {
             //检查是否是全0二维数组
@@ -72,77 +52,175 @@ editor_file_wrapper = function (editor) {
             formatArrStr += ']' + (i == si ? '' : ',\n');
         }
         return formatArrStr;
-    }
-
-    editor_file_proto.prototype.saveFloor = function (floorData, callback) {
-        //callback(err:String)
-        var floorId = floorData.floorId;
-        var filename = 'project/floors/' + floorId + '.js';
-        var datastr = ['main.floors.', floorId, '=\n'];
-
-        var tempJsonObj = Object.assign({}, floorData);
-        var tempMap = [['map', editor.util.guid()], ['bgmap', editor.util.guid()], ['fgmap', editor.util.guid()]];
-        tempMap.forEach(function (v) {
-            v[2] = tempJsonObj[v[0]];
-            tempJsonObj[v[0]] = v[1];
-        });
-        var tempJson = JSON.stringify(tempJsonObj, editor.game.replacerForSaving, 4);
-        tempMap.forEach(function (v) {
-            tempJson = tempJson.replace('"' + v[1] + '"', '[\n' + editor.file.formatMap(v[2], v[0] != 'map') + '\n]')
-        });
-        datastr = datastr.concat([tempJson]);
-        datastr = datastr.join('');
-        editor.file.alertWhenCompress();
-        editor.fs.writeFile(filename, editor.util.encode64(datastr), 'base64', function (err, data) {
-            editor.addUsedFlags(datastr);
-            callback(err);
-        });
-    }
-
-    editor_file_proto.prototype.saveScript = function (name, varName, dataObj, callback) {
-        // 此处格式化以及写入 project/xxx.js 形式的文件
-        editor.file.alertWhenCompress();
-
-        if (['maps', 'enemys'].indexOf(name) === -1) {
-            // 全部用\t展开
-            var content = JSON.stringify(dataObj, editor.game.replacerForSaving, '\t');
-        } else {
-            // 只用\t展开第一层
-            var emap = {};
-            var estr = JSON.stringify(dataObj, function (_k, v) {
-                if (v.id != null) {
-                    var id_ = editor.util.guid();
-                    emap[id_] = JSON.stringify(v, editor.game.replacerForSaving);
-                    return id_;
-                } else return v
-            }, '\t');
-            for (var id_ in emap) {
-                estr = estr.replace('"' + id_ + '"', emap[id_]);
-            }
-            var content = estr;
+    },
+    replacerForSaving(_key, value) {
+        if (replacerRecord.hasOwnProperty(value)) {
+            return replacerRecord[value]
         }
+        return value
+    }
+}
 
-        var strToWrite = `var ${varName} = \n${content}`;
-        editor.fs.writeFile(`project/${name}.js`, editor.util.encode64(strToWrite), 'base64', function (err, data) {
-            callback(err);
+export class commandStack {
+
+    stack = []
+    pointer = -1
+
+    /**
+     * 命令栈
+     * @param {Number} size 命令栈的大小, 默认为20 
+     */
+    constructor(size = 20) {
+        this.size = size;
+    }
+
+    push(command) {
+        if (this.pointer < this.stack.length-1) {
+            this.stack.splice(this.pointer+1);
+            this.pointer = this.stack.length;
+        } else if (this.stack.length >= this.size) this.stack.shift();
+        else this.pointer++;
+        this.stack.push(command);
+    }
+
+    hasBack() { return this.pointer >= 0; }
+
+    back() {
+        if (~this.pointer) return null;
+        return this.stack[this.pointer--];
+    }
+
+    hasNext() { return this.pointer < this.stack.length-1; }
+
+    next() {
+        if (this.pointer >= this.stack.length-1) return null;
+        this.pointer++;
+        return this.stack[this.pointer];
+    }
+}
+
+export class config {
+    
+    constructor(src, defaultConfig = {}) {
+        this.src = src;
+        const _this = this;
+        return fs.fetch(src).then(data => {
+                _this.config = JSON.parse(data);
+                return _this;
+            }).catch(err => {
+                console.warn(`无法读取配置文件(${src}), 已重新生成, 错误信息 ${err}`);
+                _this.config = defaultConfig;
+                return _this.save();
+            });
+    }
+    
+    get(key, defaultValue) {
+        const value = this.config[key];
+        return value != null ? value : defaultValue;
+    }
+    
+    set(key, value, save) {
+        this.config[key] = value;
+        if (save !== false) return this.save();
+    }
+    
+    save() {
+        const _this = this;
+        return new Promise((res, rej) => {
+            fs.writeFile(_this.src, JSON.stringify(_this.config, null, 4) ,'utf-8', (e) => {
+                if (e) editor.window.$notify(`写入配置文件${src}失败, 错误信息: ${e}`, {
+                    time: 5000,
+                });
+                else res();
+            })
+        })
+    }
+}
+
+export class jsFile {
+
+    /**
+     * javascript文件的类
+     * @param {String} url 文件相对地址
+     * @param {Object} data 文件数据
+     * @param {String} prefix 文件前缀
+     * @param {{stringifier: Function}} config 文件配置
+     */
+    constructor(url, data, prefix, config = {}) {
+        this.src = url;
+        this.functionPool = {};
+        this.data = ftools.functionProcess(data, this.functionPool);
+        this.prefix = prefix;
+        this.stringifier = config.stringifier || JSON.stringify; // 字符串化函数
+    }
+
+    emmiter = {};
+
+    /**
+     * 访问数据域
+     * @param {String} 路径
+     */
+    access(route) {
+        if (route[0] == '[') {
+            route = route.slice(1, -1).split('][');
+        } else {
+            route = route.split('.');
+        }
+        let data = this.data;
+        for (let n of route) {
+            data = data[n];
+        }
+        if (typeof data === 'string' && this.functionPool[data]) {
+            data = this.functionPool[data];
+        }
+        return data;
+    }
+
+    modify(commands) {
+        if (!(commands instanceof Array)) commands = [commands];
+        for (let command of commands) {
+            const route = command.key.slice(1, -1).split('][');
+            let data = this.data;
+            for (let i = 0; i < route.length-1; i++) {
+                data = data[route[i]];
+            }
+            const key = route[route.length-1];
+            if (typeof data[key] === 'string' && this.functionPool[data[key]]) {
+                this.functionPool[data[key]] = command.value;
+            } else data[key] = command.value;
+        }
+        return this.save();
+    }
+ 
+    /**
+     * 设置触发器, 目前提供[beforeSave] [afterSave], 传入this作为参数
+     * @param {String} type 
+     * @param {Function} action 
+     */
+    addEmitter(type, action) {
+        if (!this.emmiter[type]) this.emmiter[type] = [];
+        this.emmiter[type].push(action);
+    };
+
+    emit(event, ...rest) {
+        if (this.emmiter[event] instanceof Array) {
+            this.emmiter[event].forEach(e => e(...rest));
+        }
+    }
+
+    save() {
+        this.emit('beforeSave', this);
+        let datastr = this.prefix + ftools.fixByPool(this.stringifier(this.data), this.functionPool);
+        const _this = this;
+        return new Promise((res, rej) => {
+            fs.writeFile(_this.src, editor.util.encode64(datastr), 'base64', (err, data) => {
+                if (err) rej(err);
+                else {
+                    _this.emit('afterSave', _this, datastr);
+                    checkCompress();
+                    res(data);
+                }
+            });
         });
     }
-
-    editor_file_proto.prototype.saveCommentJs = function () {
-        // 无需格式化的写入, 把multi的那部分略微修改
-    }
-
-    editor_file_proto.prototype.saveImage = function () {
-        // 给追加素材使用
-    }
-
-    editor_file_proto.prototype.addMark = function (name) {
-        // 把name对应的文件在editor.file.fileMark添加标记
-    }
-
-    editor_file_proto.prototype.save = function (callback) {
-        // 根据 editor.file.fileMark 把游戏对象格式化写入文件
-    }
-
-
 }
