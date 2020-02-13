@@ -1,10 +1,10 @@
 /*
  * 表格配置项。
  * 在这里可以对表格中的各项显示进行配置，包括表格项、提示内容等内容。具体写法照葫芦画瓢即可。
- * 本配置项包括：脚本编辑。
+ * 本配置项为脚本编辑。
  */
 
-var functions_comment_c456ea59_6018_45ef_8bcc_211a24c627dc = {
+export default {
 	"_type": "object",
 	"_data": {
 		"events": {
