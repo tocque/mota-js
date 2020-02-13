@@ -197,7 +197,7 @@ export const MtView = {
             const handler = {};
             this.$emit("close", tab, handler);
             if (handler.prevent) return;
-            const index = this.tabs.indexOf(after);
+            const index = this.tabs.indexOf(tab);
             this.tabs.splice(index, 1);
         },
         closeAll() {
@@ -209,5 +209,5 @@ export const MtView = {
             Vue.$set(this.tabs, []);
         }
     },
-    components: MtIcon,
+    components: { MtIcon },
 }
