@@ -56,7 +56,7 @@
                 callback(null, data);
             }
         }, function (e) {
-            main.log(e);
+            console.log(e);
             callback(e+"：请检查启动服务是否处于正常运行状态。");
         }, "text/plain; charset=x-user-defined");
     }
@@ -141,5 +141,29 @@
             callback(err, data);
         });
         return;
+    }
+
+    /** 读取文本文件 */
+    fs.fetch = function(src) {
+        if (typeof(src) !== typeof('')) throw 'Type Error in fs.readFile';
+        let data = 'type=utf8&name=' + src;
+        return new Promise((res, rej) => {
+            postsomething(data, '/readFile', (err, data) => {
+                if (err) rej(err)
+                else res(data);
+            })
+        });
+    }
+
+    /** 读取二进制文件 */
+    fs.fetchBinary = function(src) {
+        if (typeof(src) !== typeof('')) throw 'Type Error in fs.readFile';
+        let data = 'type=base64&name=' + src;
+        return new Promise((res, rej) => {
+            postsomething(data, '/readFile', (err, data) => {
+                if (err) rej(err)
+                else res(data);
+            })
+        });
     }
 })();
