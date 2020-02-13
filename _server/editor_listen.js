@@ -1,164 +1,116 @@
-editor_listen_wrapper = function (editor) {
+import { translateKeyCode } from "./editor_util.js"
 
-    editor.constructor.prototype.listen = function () {
+export default new class inputManager {
+    keyRules = {}
 
-        editor.dom.body.onmousedown = editor.uifunctions.body_click;
-
-        editor.dom.eui.oncontextmenu = function (e) { e.preventDefault() } // 自定义了右键菜单, 阻止默认行为
-        editor.dom.midMenu.oncontextmenu = function (e) { e.preventDefault() }
-
-        editor.dom.eui.ondblclick = editor.uifunctions.map_doubleClick
-
-        editor.dom.eui.onmousedown = editor.uifunctions.map_ondown
-        editor.dom.eui.onmousemove = editor.uifunctions.map_onmove
-        editor.dom.eui.onmouseup = editor.uifunctions.map_onup
-
-        editor.dom.mid.onmousewheel = editor.uifunctions.map_mousewheel
-
-        editor.uivalues.shortcut = core.getLocalStorage('shortcut', { 48: 0, 49: 0, 50: 0, 51: 0, 52: 0, 53: 0, 54: 0, 55: 0, 56: 0, 57: 0 });
-        editor.dom.body.onkeydown = editor.uifunctions.body_shortcut
-
-        editor.uivalues.scrollBarHeight = editor.uifunctions.getScrollBarHeight();
-        editor.dom.iconExpandBtn.style.display = 'block';
-        editor.dom.iconExpandBtn.innerText = editor.uivalues.folded ? "展开素材区" : "折叠素材区";
-        editor.dom.iconExpandBtn.onclick = editor.uifunctions.fold_material_click
-
-        editor.dom.iconLib.onmousedown = editor.uifunctions.material_ondown
-        editor.dom.iconLib.oncontextmenu = function (e) { e.preventDefault() }
-
-        editor.dom.extraEvent.onmousedown = editor.uifunctions.extraEvent_click
-        editor.dom.chooseThis.onmousedown = editor.uifunctions.chooseThis_click
-        editor.dom.chooseInRight.onmousedown = editor.uifunctions.chooseInRight_click
-        editor.dom.copyLoc.onmousedown = editor.uifunctions.copyLoc_click
-        editor.dom.moveLoc.onmousedown = editor.uifunctions.moveLoc_click
-        editor.dom.clearEvent.onmousedown = editor.uifunctions.clearEvent_click
-        editor.dom.clearLoc.onmousedown = editor.uifunctions.clearLoc_click
-
-        editor.dom.lastUsed.onmousedown = editor.uifunctions.lastUsed_click;
-        editor.dom.lockMode.onchange = editor.uifunctions.lockMode_onchange;
-
-        editor.dom.brushMod.onchange = editor.uifunctions.brushMod_onchange
-        if (editor.dom.brushMod2) editor.dom.brushMod2.onchange = editor.uifunctions.brushMod2_onchange;
-        if (editor.dom.brushMod3) editor.dom.brushMod3.onchange = editor.uifunctions.brushMod3_onchange;
-
-        editor.dom.layerMod.onchange = editor.uifunctions.layerMod_onchange
-        if (editor.dom.layerMod2) editor.dom.layerMod2.onchange = editor.uifunctions.layerMod2_onchange;
-        if (editor.dom.layerMod3) editor.dom.layerMod3.onchange = editor.uifunctions.layerMod3_onchange;
-
-        editor.uifunctions.viewportButtons_func()
+    constructor() {
+        //document.body.onmousedown = editor.uifunctions.body_click;
+        document.body.addEventListener('keydown', this.execShortcut.bind(this));
     }
 
-    editor.constructor.prototype.mobile_listen = function () {
-        if (!editor.isMobile) return;
-
-        var mobileview = document.getElementById('mobileview');
-        var mid = document.getElementById('mid');
-        var right = document.getElementById('right');
-        // var mobileeditdata = document.getElementById('mobileeditdata');
-
-
-        editor.showdataarea = function (callShowMode) {
-            mid.style = 'z-index:-1;opacity: 0;';
-            right.style = 'z-index:-1;opacity: 0;';
-            // mobileeditdata.style = '';
-            if (callShowMode) editor.mode.showMode(editor.dom.editModeSelect.value);
-            editor.uifunctions.hideMidMenu();
+    getEventPath (e) {
+        //console.log(e);
+        let path = [];
+        let currentElem = e.target;
+        while (currentElem) {
+            path.push(currentElem);
+            currentElem = currentElem.parentElement;
         }
-        mobileview.children[0].onclick = function () {
-            editor.showdataarea(true)
+        if (path.indexOf(window) === -1) {
+            if (path.indexOf(document) === -1) {
+                path.push(document);
+            }
+            path.push(window);
         }
-        mobileview.children[1].onclick = function () {
-            mid.style = '';
-            right.style = 'z-index:-1;opacity: 0;';
-            // mobileeditdata.style = 'z-index:-1;opacity: 0;';
-            editor.lastClickId = '';
-        }
-        mobileview.children[3].onclick = function () {
-            mid.style = 'z-index:-1;opacity: 0;';
-            right.style = '';
-            // mobileeditdata.style = 'z-index:-1;opacity: 0;';
-            editor.lastClickId = '';
-        }
-
-        /*
-        var gettrbyid = function () {
-            if (!editor.lastClickId) return false;
-            thisTr = document.getElementById(editor.lastClickId);
-            input = thisTr.children[2].children[0].children[0];
-            field = thisTr.children[0].getAttribute('title');
-            cobj = JSON.parse(thisTr.children[1].getAttribute('cobj'));
-            return [thisTr, input, field, cobj];
-        }
-        mobileeditdata.children[0].onclick = function () {
-            var info = gettrbyid()
-            if (!info) return;
-            info[1].ondblclick()
-        }
-        mobileeditdata.children[1].onclick = function () {
-            var info = gettrbyid()
-            if (!info) return;
-            printf(info[2])
-        }
-        mobileeditdata.children[2].onclick = function () {
-            var info = gettrbyid()
-            if (!info) return;
-            printf(info[0].children[1].getAttribute('title'))
-        }
-        */
-
-        //=====
-
-        document.body.ontouchstart = document.body.onmousedown;
-        document.body.onmousedown = null;
-
-        editor.dom.eui.ontouchstart = editor.dom.eui.onmousedown
-        editor.dom.eui.onmousedown = null
-        editor.dom.eui.ontouchmove = editor.dom.eui.onmousemove
-        editor.dom.eui.onmousemove = null
-        editor.dom.eui.ontouchend = editor.dom.eui.onmouseup
-        editor.dom.eui.onmouseup = null
-
-
-        editor.dom.chooseThis.ontouchstart = editor.dom.chooseThis.onmousedown
-        editor.dom.chooseThis.onmousedown = null
-        editor.dom.chooseInRight.ontouchstart = editor.dom.chooseInRight.onmousedown
-        editor.dom.chooseInRight.onmousedown = null
-        editor.dom.copyLoc.ontouchstart = editor.dom.copyLoc.onmousedown
-        editor.dom.copyLoc.onmousedown = null
-        editor.dom.moveLoc.ontouchstart = editor.dom.moveLoc.onmousedown
-        editor.dom.moveLoc.onmousedown = null
-        editor.dom.clearLoc.ontouchstart = editor.dom.clearLoc.onmousedown
-        editor.dom.clearLoc.onmousedown = null
+        return path;
     }
 
-    editor.constructor.prototype.mode_listen = function (callback) {
-
-        // 这里的函数还没有写jsdoc, 通过_func()的方式先完成分类
-
-        editor.uifunctions.newIdIdnum_func()
-        editor.uifunctions.changeId_func()
-        editor.uifunctions.copyPasteEnemyItem_func();
-
-        editor.uifunctions.selectFloor_func()
-        editor.uifunctions.saveFloor_func()
-
-        editor.uifunctions.newMap_func()
-
-        editor.uifunctions.createNewMaps_func()
-
-        editor.uifunctions.changeFloorId_func()
-
-        editor.uifunctions.fixCtx_func()
-
-        editor.uifunctions.selectAppend_func()
-        editor.uifunctions.selectFileBtn_func()
-        editor.uifunctions.changeColorInput_func()
-        editor.uifunctions.picClick_func()
-        editor.uifunctions.appendConfirm_func()
-
-        editor.dom.editModeSelect.onchange = editor.mode.editModeSelect_onchange
-
-        if (Boolean(callback)) callback();
+    getOffsetPos(e, elm) {
+        return new editor.util.pos(e.clientX - elm.clientLeft, e.clientY - elm.clientTop);
     }
 
+    eToLoc(e, absdom, scrdom) {
+        const scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+        let xx = e.clientX, yy = e.clientY
+        if (editor.isMobile) { xx = e.touches[0].clientX, yy = e.touches[0].clientY }
+        let x = scrollLeft + xx, y = scrollTop + yy;
+        if (!(absdom instanceof Array)) absdom = [dom];
+        for (let i of absdom) {
+            x -= i.offsetLeft;
+            y -= i.offsetTop;
+        }
+        for (let i of scrdom) {
+            x -= i.scrollLeft;
+            y -= i.scrollTop;
+        }
+        return new editor.util.pos(x, y);
+    }
+
+    /**
+     * 注册快捷键, 可以以{键盘码: 规则}的键值对形式传入
+     * @param {Number|String} keyCode 监听的键盘码
+     * @param {{
+     *      action: Function,
+     *      pirority: Number,
+     *      condition: Function,
+     *      prevent
+     * }} shortcut 要注册的规则
+     * @param shortcut.action 触发时的反应
+     * @param shortcut.pirority 反应优先级, 默认为0, 数字越大越先反应
+     * @param shortcut.condition 触发条件, 为true时才进行反应
+     * @param shortcut.prevent 是否取消默认事件
+     */
+    regShortcut(keyCode, shortcut) {
+        if (!shortcut) {
+            for (var name in keyCode) {
+                this.regShortcut(name, keyCode[name]);
+            }
+        } else {
+            let spec = "";
+            if (keyCode instanceof Number) {
+                spec = "normal";
+            }
+            else {
+                let modifier = keyCode.toLowerCase().split(".");
+                keyCode = modifier.shift();
+                if (modifier.indexOf("alt") !== -1) spec += "alt";
+                if (modifier.indexOf("ctrl") !== -1) spec += "ctrl";
+                if (modifier.indexOf("shift") !== -1) spec += "shift";
+                if (spec === "") spec = "normal";
+                try {
+                    keyCode = translateKeyCode(keyCode);
+                } catch(e) {
+                    console.error("键盘码解析错误\n"+e);
+                }
+            }
+            if (!shortcut.condition) shortcut.condition = condition;
+            if (!shortcut.pirority) shortcut.pirority = 0;
+            if (!this.keyRules[spec]) this.keyRules[spec] = [];
+            if (!this.keyRules[spec][keyCode]) this.keyRules[spec][keyCode] = [shortcut];
+            else {
+                this.keyRules[spec][keyCode].push(shortcut);
+                this.keyRules[spec][keyCode].sort((a, b) => b.pirority - a.pirority);
+            }
+        }
+    }
+
+    execShortcut(e) {
+        let spec = "";
+        if (e.altKey) spec += "alt";
+        if (e.ctrlKey) spec += "ctrl";
+        if (e.shiftKey) spec += "shift";
+        if (!spec) spec = "normal";
+        if (!this.keyRules[spec]) return;
+        let shortcuts = this.keyRules[spec][e.keyCode];
+        if (!shortcuts) return;
+        let prevent = false;
+        for (let shortcut of shortcuts) {
+            if (shortcut.condition()) {
+                shortcut.action();
+                if (shortcut.prevent) prevent = true;
+            }
+        }
+        if (prevent) e.preventDefault();
+    }
 }
