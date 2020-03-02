@@ -12,17 +12,13 @@ let components = {
     scriptTree, pluginLib, pluginDetail
 }
 
-let leftPanels = [
-    "scriptTree", "pluginLib"
-];
-
 importCSS("./_server/panels/script_panel/script_panel.css");
 
 export default {
     label: "脚本",
     template: /* HTML */`
     <div class="main-side-layout" id="scriptPanel">
-        <mt-side class="left" @toggle="e => leftCollapsed = e">
+        <mt-side class="left" @tucked.sync="leftCollapsed">
             <script-tree active ref="scriptTree" @openTab="openTab"></script-tree>
             <plugin-lib @openTab="openTab"></plugin-lib>
         </mt-side>
@@ -49,9 +45,6 @@ export default {
             tab: {},
             leftCollapsed: false,
         }
-    },
-    created() {
-        console.log(this.$refs);
     },
     activated() {
         this.active = true;
