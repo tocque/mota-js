@@ -8,13 +8,9 @@ import mapExplorer from "./map_explorer.js";
 import posData from "./pos_data.js";
 import blockData from "./block_data.js";
 import mapData from "./map_data.js";
-import tiledEditor from "./tiled_editor.js";
-import iconLib from "./icon_lib.js";
-import lastUsedBlocks from "./last_used_blocks.js";
 
 let components = {
-    mapExplorer, posData, blockData, mapData, 
-    tiledEditor, iconLib, lastUsedBlocks
+    mapExplorer, posData, blockData, mapData,
 }
 
 importCSS("./_server/panels/map_panel/map_panel.css");
@@ -30,11 +26,7 @@ export default {
             <map-data></map-data>
         </mt-side>
         <div class="mid" :class="{ expend: leftCollapsed }">
-            <tiled-editor v-model="iconNow"></tiled-editor>
-            <last-used-blocks v-model="iconNow"></last-used-blocks>
-        </div>
-        <div class="right">
-            <icon-lib ref="iconLib" v-model="iconNow"></icon-lib>
+            <tiled-editor @showBlock="showBlock"></tiled-editor>
         </div>
         <status-item v-show="active">{{ currentMapid }}</status-item>
     </div>`,
@@ -50,7 +42,6 @@ export default {
             mode: '',
             info: {},
             doubleClickMode: 'change',
-            iconNow: 0,
             // 画图区菜单
             lastRightButtonPos: [{x:0,y:0}, {x:0,y:0}],
             // 数据
@@ -62,7 +53,7 @@ export default {
         this.maps = game.getMaps();
     },
     mounted() {
-        let mapid = editor.towerInfo.get("lastEditFloorId", null)
+        const mapid = editor.towerInfo.get("lastEditFloorId", null)
             || game.data.data.access('firstData.floorId');
         this.$store.commit('openMap', mapid);
     },
@@ -71,6 +62,11 @@ export default {
     },
     deactivated() {
         this.active = false;
+    },
+    methods: {
+        showBlock() {
+
+        }
     },
     watch: {
         currentMapid(newValue, oldValue) {

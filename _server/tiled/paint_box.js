@@ -1,25 +1,108 @@
+import { $ } from "../mt-ui/canvas.js"
+import { isset } from "../editor_util.js"
+
+const imgNames = [
+    "terrains", "animates", "enemys", "enemy48", "items", "npcs", "npc48", "autotile"
+];
+const tilesConfig = {
+    "terrains": {
+        offset: 1,
+    },
+    "animates": {
+        grid: 4,
+    },
+    "enemy": {
+        grid: 2,
+    },
+    "enemy48": {
+        grid: 4,
+        height: 48,
+    },
+    "npcs": {
+        grid: 2,
+    },
+    "npc48": {
+        grid: 4,
+        height: 48,
+    },
+    "autotile": {
+        grid: [4, 3],
+        imageArray: true,
+        summary: [128, 96],
+    },
+    "tileset": {
+        drawRect: true,
+        nowrap: true,
+    }
+}
+
+class tileImage {
+
+    constructor(datasource, config, onclick) {
+        this.ctx = $({ style: { position: "relative" }});
+        this.config = config;
+        this.datasource = datasource;
+        this.ctx.addEventListener("click", function(e) {
+            const [w, h] = this.getGrid();
+            onclick(Math.floor(e.layerX) / w, Math.floor(e.layerY / h));
+        }.bind(this));
+        if (config.drawRect) {
+            this.ctx.onRect(fn, this.getGrid());
+        }
+    }
+
+    getGrid() {
+        const config = this.config;
+        let grid = config.grid || [1, 1];
+        if (!Array.isArray(grid)) grid = [grid, 1];
+        if (config.folded) grid = [1, 1];
+        return [config.width * grid[0] || 32, h = config.height * grid[1] || 32];
+    }
+
+    update(folded, perCol) {
+        const config = this.config;
+        const image = this.datasource();
+        let grid = config.grid || [1, 1];
+        if (!Array.isArray(grid)) grid = [grid, 1];
+        const w = config.width || 32, h = config.height || 32;
+
+        if (folded) config.folded = folded;
+        if (perCol) config.perCol = perCol;
+        // 计算宽高
+        
+        let oriCol, oriRow;
+        if (config.imageArray) {
+            oriCol = 1, oriRow = image.length;
+        } else {
+            oriCol = image.width / grid[0] / w;
+            oriRow = image.height / grid[1] / h;
+        }
+        let col = oriCol, row = oriRow + (config.offset || 0);
+        if (config.folded) {
+            col = Math.ceil(row / config.perCol);
+            row = config.perCol;
+        }
+
+        this.ctx.resize(col * w, row * h);
+
+        // 绘制
+        if (config.folded) grid = [1, 1];
+
+    }
+}
 
 export default {
     template: /* HTML */`
-    <div id="iconLib" @mousedown="ondown">
-        <div id="iconImages"></div>
+    <div id="paintBox">
+        <div id="tiledImages" @mousedown="ondown"></div>
         <div id="selectBox">
-            <div 
-                id='dataSelection'
-                v-show="selected"
-            ></div>
+            <div id='dataSelection' v-show="selected"></div>
         </div>
-        <button id="iconExpandBtn" @click="setFold">{{ folded ? "展开素材区" : "折叠素材区" }}</button>
+        <button id="iconExpandBtn" @click="toggleFold">{{ folded ? "展开素材区" : "折叠素材区" }}</button>
     </div>`,
-    props: {
-        selection: Number,
-    },
-    model: {
-        prop: 'selection',
-        event: 'select'
-    },
     data: function() {
         return {
+            selection: Number,
             scrollBarHeight :0,
             folded: false,
             foldPerCol: 50,
@@ -27,150 +110,48 @@ export default {
         }
     },
     created: function() {
+        this.icons = core.icons.icons;
         this.folded = editor.userdata.get('folded', false);
         this.foldPerCol = editor.userdata.get('foldPerCol', 50);
         //oncontextmenu = function (e) { e.preventDefault() }
     },
     mounted: function() {
-        //this.drawInitData(core.icons.icons);
+        this.initTileImages(core.material.images);
+        this.setTileFold(this.folded, this.perCol);
     },
     methods: {
-        setFold: function () {
+        toggleFold() {
             if (this.folded) {
                 if (confirm("你想要展开素材吗？\n展开模式下将显示全素材内容。")) {
-                    core.setLocalStorage('folded', false);
-                    window.location.reload();
+                    editor.userdata.set('folded', false);
+                    this.setTileFold(false);
                 }
             } else {
-                var perCol = parseInt(prompt("请输入折叠素材模式下每列的个数：", "50")) || 0;
+                const perCol = parseInt(prompt("请输入折叠素材模式下每列的个数：", "50")) || 0;
                 if (perCol > 0) {
-                    core.setLocalStorage('foldPerCol', perCol);
-                    core.setLocalStorage('folded', true);
-                    window.location.reload();
+                    editor.userdata.get('foldPerCol', perCol);
+                    editor.userdata.set('folded', true);
+                    this.setTileFold(true, 50);
                 }
             }
+            this.folded = !this.folded;
         },
-        drawInitData: function (icons) {
-            var ratio = 1;
-            var images = core.material.images;
-            var maxHeight = 700;
-            var sumWidth = 0;
-            editor.widthsX = {};
-            // editor.uivalues.folded = true;
-            // var imgNames = Object.keys(images);  //还是固定顺序吧；
-            editor.uivalues.lastUsed = core.getLocalStorage("lastUsed", []);
-            var imgNames = ["terrains", "animates", "enemys", "enemy48", "items", "npcs", "npc48", "autotile"];
-        
-            for (var ii = 0; ii < imgNames.length; ii++) {
-                var img = imgNames[ii], tempy = 0;
-                if (img == 'autotile') {
-                    var autotiles = images[img];
-                    for (var im in autotiles) {
-                        tempy += autotiles[im].height;
-                    }
-                    var tempx = this.folded ? 32 : 3 * 32;
-                    editor.widthsX[img] = [img, sumWidth / 32, (sumWidth + tempx) / 32, tempy];
-                    sumWidth += tempx;
-                    maxHeight = Math.max(maxHeight, tempy);
-                    continue;
-                }
-                var width = images[img].width, height = images[img].height, mh = height;
-                if (this.folded) {
-                    var per_height = (img == 'enemy48' || img == 'npc48' ? 48 : 32);
-                    width = Math.ceil(height / per_height / editor.uivalues.foldPerCol) * 32;
-                    if (width > 32) mh = per_height * editor.uivalues.foldPerCol;
-                }
-                editor.widthsX[img] = [img, sumWidth / 32, (sumWidth + width) / 32, height];
-                sumWidth += width;
-                maxHeight = Math.max(maxHeight, mh + 64);
+
+        initTileImages(images) {
+
+        },
+
+        /**
+         * 更新折叠状态
+         * @param {Boolean} [folded] 是否折叠 
+         * @param {Number} [perCol] 每列个数
+         */
+        setTileFold(folded, perCol) {
+            if (!isset(folded)) folded = this.folded;
+            if (!perCol) perCol = this.foldPerCol;
+            for (let t of this.tileImages) {
+                t.update(folded, perCol);
             }
-            var tilesets = images.tilesets;
-            for (var ii in core.tilesets) {
-                var img = core.tilesets[ii];
-                editor.widthsX[img] = [img, sumWidth / 32, (sumWidth + tilesets[img].width) / 32, tilesets[img].height];
-                sumWidth += tilesets[img].width;
-                maxHeight = Math.max(maxHeight, tilesets[img].height);
-            }
-        
-            var fullWidth = ~~(sumWidth * ratio);
-            var fullHeight = ~~(maxHeight * ratio);
-        
-            /*
-            if (fullWidth > edata.width) edata.style.width = (edata.width = fullWidth) / ratio + 'px';
-            edata.style.height = (edata.height = fullHeight) / ratio + 'px';
-            */
-            var iconImages = document.getElementById('iconImages');
-            iconImages.style.width = (iconImages.width = fullWidth) / ratio + 'px';
-            iconImages.style.height = (iconImages.height = fullHeight) / ratio + 'px';
-            var drawImage = function (image, x, y) {
-                image.style.left = x + 'px';
-                image.style.top = y + 'px';
-                iconImages.appendChild(image);
-            }
-        
-            var nowx = 0, nowy = 0;
-            for (var ii = 0; ii < imgNames.length; ii++) {
-                var img = imgNames[ii];
-                if (img == 'terrains') {
-                    (function(image,nowx){
-                        if (image.complete) {
-                            drawImage(image, nowx, 32);
-                            core.material.images.airwall = image;
-                            delete(editor.airwallImg);
-                        } else image.onload = function () {
-                            drawImage(image, nowx, 32);
-                            core.material.images.airwall = image;
-                            delete(editor.airwallImg);
-                            editor.updateMap();
-                        }
-                    })(editor.airwallImg,nowx);
-                    if (this.folded) {
-                        // --- 单列 & 折行
-                        var subimgs = core.splitImage(images[img], 32, editor.uivalues.foldPerCol * 32);
-                        var frames = images[img].width / 32;
-                        for (var i = 0; i < subimgs.length; i+=frames) {
-                            drawImage(subimgs[i], nowx, i==0?2*32:0);
-                            nowx += 32;
-                        }
-                    }
-                    else {
-                        drawImage(images[img], nowx, 32*2);
-                        nowx += images[img].width;
-                    }
-                    continue;
-                }
-                if (img == 'autotile') {
-                    var autotiles = images[img];
-                    var tempx = this.folded ? 32 : 96;
-                    for (var im in autotiles) {
-                        var subimgs = core.splitImage(autotiles[im], tempx, autotiles[im].height);
-                        drawImage(subimgs[0], nowx, nowy);
-                        nowy += autotiles[im].height;
-                    }
-                    nowx += tempx;
-                    continue;
-                }
-                if (this.folded) {
-                    // --- 单列 & 折行
-                    var per_height = img.endsWith('48') ? 48 : 32;
-                    var subimgs = core.splitImage(images[img], 32, editor.uivalues.foldPerCol * per_height);
-                    var frames = images[img].width / 32;
-                    for (var i = 0; i < subimgs.length; i+=frames) {
-                        drawImage(subimgs[i], nowx, 0);
-                        nowx += 32;
-                    }
-                }
-                else {
-                    drawImage(images[img], nowx, 0);
-                    nowx += images[img].width;
-                }
-            }
-            for (var ii in core.tilesets) {
-                var img = core.tilesets[ii];
-                drawImage(tilesets[img], nowx, 0);
-                nowx += tilesets[img].width;
-            }
-            //editor.mapInit();
         },
         ondown: function (e) {
             e.stopPropagation();
