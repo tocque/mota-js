@@ -1,7 +1,7 @@
 var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a = 
 {
-    "events": {
-        "resetGame": function (hero, hard, floorId, maps, values) {
+	"events": {
+		"resetGame": function resetGame(hero, hard, floorId, maps, values) {
 	// 重置整个游戏；此函数将在游戏开始时，或者每次读档时最先被调用
 	// hero：勇士信息；hard：难度；floorId：当前楼层ID；maps：地图信息；values：全局数值信息
 
@@ -50,7 +50,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 隐藏右下角的音乐按钮
 	core.dom.musicBtn.style.display = 'none';
 },
-        "setInitData": function () {
+		"setInitData": function setInitData() {
 	// 不同难度分别设置初始属性
 	if (core.status.hard == 'Easy') { // 简单难度
 		core.setFlag('hard', 1); // 可以用flag:hard来获得当前难度
@@ -72,7 +72,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 设置已经到过的楼层
 	core.setFlag("__visited__", {});
 },
-        "win": function (reason, norank, noexit) {
+		"win": function (reason, norank, noexit) {
 	// 游戏获胜事件
 	// 请注意，成绩统计时是按照hp进行上传并排名
 	// 可以先在这里对最终分数进行计算，比如将2倍攻击和5倍黄钥匙数量加到分数上
@@ -100,7 +100,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		})
 	});
 },
-        "lose": function(reason) {
+		"lose": function(reason) {
 	// 游戏失败事件
 	core.ui.closePanel();
 	var replaying = core.isReplaying();
@@ -113,7 +113,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		});
 	})
 },
-        "changingFloor": function (floorId, heroLoc, fromLoad) {
+		"changingFloor": function (floorId, heroLoc, fromLoad) {
 	// 正在切换楼层过程中执行的操作；此函数的执行时间是“屏幕完全变黑“的那一刻
 	// floorId为要切换到的楼层ID；heroLoc表示勇士切换到的位置；fromLoad表示是否是从读档造成的切换
 
@@ -168,7 +168,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// ...可以新增一些其他内容，比如创建个画布在右上角显示什么内容等等
 
 },
-        "afterChangeFloor": function (floorId, fromLoad) {
+		"afterChangeFloor": function (floorId, fromLoad) {
 	// 转换楼层结束的事件；此函数会在整个楼层切换完全结束后再执行
 	// floorId是切换到的楼层；fromLoad若为true则代表是从读档行为造成的楼层切换
 
@@ -187,7 +187,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		}
 	}
 },
-        "flyTo": function (toId, callback) {
+		"flyTo": function (toId, callback) {
 	// 楼层传送器的使用，从当前楼层飞往toId
 	// 如果不能飞行请返回false
 
@@ -222,7 +222,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 	return true;
 },
-        "beforeBattle": function (enemyId, x, y) {
+		"beforeBattle": function (enemyId, x, y) {
 	// 战斗前触发的事件，可以加上一些战前特效（详见下面支援的例子）
 	// 此函数在“检测能否战斗和自动存档”【之后】执行。如果需要更早的战前事件，请在插件中覆重写 core.events.doSystemEvent 函数。
 	// 返回true则将继续战斗，返回false将不再战斗。
@@ -252,7 +252,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 	return true;
 },
-        "afterBattle": function (enemyId, x, y, callback) {
+		"afterBattle": function (enemyId, x, y, callback) {
 	// 战斗结束后触发的事件
 
 	var enemy = core.material.enemys[enemyId];
@@ -395,7 +395,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	if (callback) callback();
 
 },
-        "afterOpenDoor": function (doorId, x, y, callback) {
+		"afterOpenDoor": function (doorId, x, y, callback) {
 	// 开一个门后触发的事件
 
 	var todo = [];
@@ -411,7 +411,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 	if (callback) callback();
 },
-        "afterGetItem": function (itemId, x, y, callback) {
+		"afterGetItem": function (itemId, x, y, callback) {
 	// 获得一个道具后触发的事件
 	core.playSound('item.mp3');
 
@@ -423,11 +423,11 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 	if (callback) callback();
 },
-        "afterChangeLight": function(x,y) {
+		"afterChangeLight": function(x,y) {
 	// 改变亮灯之后，可以触发的事件
 
 },
-        "afterPushBox": function () {
+		"afterPushBox": function () {
 	// 推箱子后的事件
 	if (core.searchBlock('box').length == 0) {
 		// 可以通过if语句来进行开门操作
@@ -440,7 +440,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		*/
 	}
 },
-        "afterUseBomb": function () {
+		"afterUseBomb": function () {
 	// 使用炸弹/圣锤后的事件
 
 	// 这是一个使用炸弹也能开门的例子
@@ -455,14 +455,14 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	*/
 
 },
-        "afterPassNet": function (x, y, id) {
+		"afterPassNet": function (x, y, id) {
 	// 经过特殊地形后的事件；x和y为当前坐标，id为当前的图块id
 
 	// 这是个一次性血网的例子
 	// if (id == 'lavaNet') core.removeBlock(x, y);
 
 },
-        "canUseQuickShop": function(shopId) {
+		"canUseQuickShop": function(shopId) {
 	// 当前能否使用某个快捷商店
 	// shopId：快捷商店ID
 	// 如果返回一个字符串，表示不能，字符串为不能使用的提示
@@ -474,9 +474,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 	return null;
 }
-    },
-    "enemys": {
-        "getSpecials": function () {
+	},
+	"enemys": {
+		"getSpecials": function getSpecials() {
 	// 获得怪物的特殊属性，每一行定义一个特殊属性。
 	// 分为三项，第一项为该特殊属性的数字，第二项为特殊属性的名字，第三项为特殊属性的描述
 	// 可以直接写字符串，也可以写个function将怪物传进去
@@ -510,7 +510,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		[27, "捕捉", "当走到怪物周围十字时会强制进行战斗。"]
 	];
 },
-        "getEnemyInfo": function (enemy, hero, x, y, floorId) {
+		"getEnemyInfo": function (enemy, hero, x, y, floorId) {
 	// 获得某个怪物变化后的数据；该函数将被伤害计算和怪物手册使用
 	// 例如：坚固、模仿、仿攻等等
 	// 
@@ -628,7 +628,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		"guards": guards, // 返回支援情况
 	};
 },
-        "getDamageInfo": function (enemy, hero, x, y, floorId) {
+		"getDamageInfo": function (enemy, hero, x, y, floorId) {
 	// 获得战斗伤害信息（实际伤害计算函数）
 	// 
 	// 参数说明：
@@ -776,9 +776,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		"damage": Math.floor(damage)
 	};
 }
-    },
-    "actions": {
-        "onKeyUp": function (keyCode, altKey) {
+	},
+	"actions": {
+		"onKeyUp": function (keyCode, altKey) {
 	// 键盘按键处理，可以在这里自定义快捷键列表
 	// keyCode：当前按键的keyCode（每个键的keyCode自行百度）
 	// altKey：Alt键是否被按下，为true代表同时按下了Alt键
@@ -934,7 +934,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	}
 
 },
-        "onStatusBarClick": function (px, py) {
+		"onStatusBarClick": function (px, py) {
 	// 点击状态栏时触发的事件，仅在自绘状态栏开启时生效
 	// px和py为点击的像素坐标
 	// 
@@ -951,9 +951,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 这里是直接打出点击坐标的例子。
 	// console.log("onStatusBarClick:", px, py);
 }
-    },
-    "control": {
-        "saveData": function () {
+	},
+	"control": {
+		"saveData": function () {
 	// 存档操作，此函数应该返回“具体要存档的内容”
 
 	// 差异化存储values
@@ -988,7 +988,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 	return data;
 },
-        "loadData": function (data, callback) {
+		"loadData": function (data, callback) {
 	// 读档操作；从存储中读取了内容后的行为
 
 	// 重置游戏和路线
@@ -1031,7 +1031,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		if (callback) callback();
 	}, true);
 },
-        "updateStatusBar": function () {
+		"updateStatusBar": function () {
 	// 更新状态栏
 
 	// 检查等级
@@ -1120,7 +1120,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 更新全地图显伤
 	core.updateDamage();
 },
-        "updateCheckBlock": function (floorId) {
+		"updateCheckBlock": function (floorId) {
 	// 领域、夹击、阻击等的伤害值计算
 	floorId = floorId || core.status.floorId;
 	if (!floorId || !core.status.maps) return;
@@ -1282,7 +1282,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		cache: {} // clear cache
 	};
 },
-        "moveOneStep": function (x, y) {
+		"moveOneStep": function (x, y) {
 	// 勇士每走一步后执行的操作，x,y为要移动到的坐标。
 	// 这个函数执行在“刚走完”的时候，即还没有检查该点的事件和领域伤害等。
 	// 请注意：瞬间移动不会执行该函数。如果要控制能否瞬间移动有三种方法：
@@ -1311,7 +1311,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 如需强行终止行走可以在这里条件判定：
 	// core.stopAutomaticRoute();
 },
-        "moveDirectly": function (x, y, ignoreSteps) {
+		"moveDirectly": function (x, y, ignoreSteps) {
 	// 瞬间移动；x,y为要瞬间移动的点；ignoreSteps为减少的步数，可能之前已经被计算过
 	// 返回true代表成功瞬移，false代表没有成功瞬移
 
@@ -1336,7 +1336,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	}
 	return false;
 },
-        "parallelDo": function (timestamp) {
+		"parallelDo": function (timestamp) {
 	// 并行事件处理，可以在这里写任何需要并行处理的脚本或事件
 	// 该函数将被系统反复执行，每次执行间隔视浏览器或设备性能而定，一般约为16.6ms一次
 	// 参数timestamp为“从游戏资源加载完毕到当前函数执行时”的时间差，以毫秒为单位
@@ -1353,9 +1353,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		}
 	}
 }
-    },
-    "ui": {
-        "drawStatusBar": function () {
+	},
+	"ui": {
+		"drawStatusBar": function () {
 	// 自定义绘制状态栏，需要开启状态栏canvas化
 
 	// 如果是非状态栏canvas化，直接返回
@@ -1422,7 +1422,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	ctx.fillStyle = '#FF8888';
 	ctx.fillText(core.statusBar.redKey.innerText, leftOffset + 75, topOffset + 20);
 },
-        "drawStatistics": function () {
+		"drawStatistics": function () {
 	// 浏览地图时参与的统计项目
 	
 	return [
@@ -1438,7 +1438,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		// 在这里可以增加新的ID来进行统计个数，只能增加道具ID
 	];
 },
-        "drawAbout": function() {
+		"drawAbout": function() {
 	// 绘制“关于”界面
 	core.ui.closePanel();
 	core.lockControl();
@@ -1462,5 +1462,5 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	core.fillText('ui', 'HTML5魔塔交流群：539113091', text_start, top+112+32);
 	// TODO: 写自己的“关于”页面，每次增加32像素即可
 }
-    }
+	}
 }

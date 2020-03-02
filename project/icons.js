@@ -261,10 +261,4 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"skill1": 30,
 		"wand": 10
 	},
-	"autotile": {
-		"001-G_Water01": 0,
-		"006-G_Road02": 0,
-		"007-G_Undulation01": 0,
-		"037-Tree02": 0
-	}
 }

@@ -22,65 +22,69 @@ loader.prototype._setStartLoadTipText = function (text) {
     core.dom.startTopLoadTips.innerText = text;
 }
 
-loader.prototype._load = function (callback) {
-    this._loadIcons();
-    this._loadAnimates();
-    this._loadMusic();
+loader.prototype._load = function (loadList, callback) {
+    console.log(loadList);
+    this._loadSystemImages(loadList.system);
+    this._loadAnimates(loadList.animates);
+    this._loadMusic(loadList.audios);
 
-    core.loader._loadMaterialImages(function () {
-        core.loader._loadExtraImages(function () {
-            core.loader._loadAutotiles(function () {
-                core.loader._loadTilesets(callback);
+    var images = loadList.resources;
+    core.loader._loadMaterialImages(loadList.tiles, function () {
+        core.loader._loadExtraImages(images.images, function () {
+            core.loader._loadAutotiles(images.autotiles, function () {
+                core.loader._loadTilesets(images.tilesets, callback);
             })
         })
     });
 }
 
-loader.prototype._loadIcons = function () {
-    this.loadImage("materials", "icons.png", function (id, image) {
-        var images = core.splitImage(image);
+loader.prototype._loadSystemImages = function (list) {
+    var callback = function() {
+        core.animateFrame.weather.fog = core.material.images.fog;
+        core.material.images.keyboard = core.material.images.keyboard;
+
+        var icons = core.splitImage(core.material.images.icons);
         for (var key in core.statusBar.icons) {
             if (typeof core.statusBar.icons[key] == 'number') {
-                core.statusBar.icons[key] = images[core.statusBar.icons[key]];
+                core.statusBar.icons[key] = icons[core.statusBar.icons[key]];
                 if (core.statusBar.image[key] != null)
                     core.statusBar.image[key].src = core.statusBar.icons[key].src;
             }
         }
-    });
-}
-
-loader.prototype._loadMaterialImages = function (callback) {
-    var keys = core.materials.map(function(e) { return e + '.png' })
-    this._setStartLoadTipText("正在加载资源文件...");
+    }
     if (main.useCompress) {
-        this.loadImagesFromZip('project/images/materials.zip', core.materials, core.material.images, callback);
+        this.loadImagesFromZip('project/images/materials.zip', list, core.material.images, callback);
     } else {
-        this.loadImages('materials', keys, core.material.images, callback);
+        this.loadImages("system", list, core.material.images, callback);
     }
 }
 
-loader.prototype._loadExtraImages = function (callback) {
-    core.material.images.images = {};
+loader.prototype._loadMaterialImages = function (list, callback) {
+    list = list.map(function(e) { return e + '.png' })
+    this._setStartLoadTipText("正在加载资源文件...");
+    if (main.useCompress) {
+        this.loadImagesFromZip('project/images/materials.zip', list, core.material.images, callback);
+    } else {
+        this.loadImages('tiles', list, core.material.images, callback);
+    }
+}
 
-    var images = core.clone(core.images);
+loader.prototype._loadExtraImages = function (list, callback) {
+    core.material.images.images = {};
 
     this._setStartLoadTipText("正在加载图片文件...");
     if (main.useCompress) {
-        this.loadImagesFromZip('project/images/images.zip', images, core.material.images.images, callback);
+        this.loadImagesFromZip('project/images/images.zip', list, core.material.images.images, callback);
     } else {
-        this.loadImages('images', images, core.material.images.images, callback);
+        this.loadImages('images', list, core.material.images.images, callback);
     }
 }
 
-loader.prototype._loadAutotiles = function (callback) {
+loader.prototype._loadAutotiles = function (list, callback) {
     core.material.images.autotile = {};
-    var keys = [];
-    for (let tile in core.material.icons.autotile) {
-        keys.push(tile + '.png');
-    }
     var autotiles = {};
     var _callback = function () {
-        keys.forEach(function (v) {
+        list.forEach(function (v) {
             core.material.images.autotile[v] = autotiles[v];
         });
 
@@ -92,15 +96,14 @@ loader.prototype._loadAutotiles = function (callback) {
     }
     this._setStartLoadTipText("正在加载自动元件...");
     if (main.useCompress) {
-        this.loadImagesFromZip('project/images/autotiles.zip', keys, autotiles, _callback);
+        this.loadImagesFromZip('project/images/autotiles.zip', list, autotiles, _callback);
     } else {
-        this.loadImages('autotiles', keys, autotiles, _callback);
+        this.loadImages('autotiles', list, autotiles, _callback);
     }
 }
 
-loader.prototype._loadTilesets = function (callback) {
+loader.prototype._loadTilesets = function (list, callback) {
     core.material.images.tilesets = {};
-    core.tilesets = core.tilesets || [];
     var _callback = function () {
         // 检查宽高是32倍数，如果出错在控制台报错
         for (var imgName in core.material.images.tilesets) {
@@ -116,9 +119,9 @@ loader.prototype._loadTilesets = function (callback) {
     }
     this._setStartLoadTipText("正在加载额外素材...");
     if (main.useCompress) {
-        this.loadImagesFromZip('project/images/tilesets.zip', core.tilesets, core.material.images.tilesets, _callback);
+        this.loadImagesFromZip('project/images/tilesets.zip', list, core.material.images.tilesets, _callback);
     } else {
-        this.loadImages('tilesets', core.tilesets, core.material.images.tilesets, _callback);
+        this.loadImages('tilesets', list, core.material.images.tilesets, _callback);
     }
 }
 
@@ -179,6 +182,8 @@ loader.prototype.loadImagesFromZip = function (url, names, toSave, callback) {
 loader.prototype.loadImage = function (dir, imgName, callback) {
     try {
         var name = imgName;
+        if (name.indexOf(".") < 0)
+            name = name + ".png";
         var image = new Image();
         image.onload = function () {
             callback(imgName, image);
@@ -195,20 +200,20 @@ loader.prototype.loadImage = function (dir, imgName, callback) {
     }
 }
 
-loader.prototype._loadAnimates = function () {
+loader.prototype._loadAnimates = function (list) {
     this._setStartLoadTipText("正在加载动画文件...");
     if (main.useCompress) {
         core.unzip('project/animates/animates.zip?v=' + main.version, function (animates) {
             for (var name in animates) {
                 if (name.endsWith(".animate")) {
                     var t = name.substring(0, name.length - 8);
-                    if (core.animates.indexOf(t) >= 0)
+                    if (list.indexOf(t) >= 0)
                         core.loader._loadAnimate(t, animates[name]);
                 }
             }
         }, null, true);
     } else {
-        core.animates.forEach(function (t) {
+        list.forEach(function (t) {
             core.http('GET', 'project/animates/' + t + ".animate?v=" + main.version, null, function (content) {
                 core.loader._loadAnimate(t, content);
             }, function (e) {
@@ -268,8 +273,8 @@ loader.prototype._loadAnimate = function (name, content) {
 }
 
 ////// 加载音频 //////
-loader.prototype._loadMusic = function () {
-    core.bgms.forEach(function (t) {
+loader.prototype._loadMusic = function (list) {
+    list.bgms.forEach(function (t) {
         core.loader.loadOneMusic(t);
     });
 
@@ -277,13 +282,13 @@ loader.prototype._loadMusic = function () {
     if (main.useCompress && core.musicStatus.audioContext) {
         core.unzip('project/sounds/sounds.zip?v=' + main.version, function (data) {
             for (var name in data) {
-                if (core.sounds.indexOf(name) >= 0) {
+                if (list.sounds.indexOf(name) >= 0) {
                     core.loader._loadOneSound_decodeData(name, data[name]);
                 }
             }
         });
     } else {
-        core.sounds.forEach(function (t) {
+        list.sounds.forEach(function (t) {
             core.loader.loadOneSound(t);
         });
     }

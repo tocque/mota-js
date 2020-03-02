@@ -8,33 +8,43 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"sample3",
 			"MT0"
 		],
-		"images": [
-			"bg.jpg",
-			"winskin.png"
-		],
-		"tilesets": [
-			"magictower.png"
-		],
 		"animates": [
 			"hand",
 			"sword",
 			"zone"
 		],
-		"bgms": [
-			"bgm.mp3"
-		],
-		"sounds": [
-			"floor.mp3",
-			"attack.mp3",
-			"door.mp3",
-			"item.mp3",
-			"equip.mp3",
-			"zone.mp3",
-			"jump.mp3",
-			"pickaxe.mp3",
-			"bomb.mp3",
-			"centerFly.mp3"
-		],
+		"resources": {
+			"images": [
+				"bg.jpg",
+				"winskin.png"
+			],
+			"tilesets": [
+				"magictower.png"
+			],
+			"autotiles": [
+				"001-G_Water01",
+				"006-G_Road02",
+				"007-G_Undulation01",
+				"037-Tree02"
+			],
+		},
+		"audios": {
+			"bgms": [
+				"bgm.mp3"
+			],
+			"sounds": [
+				"floor.mp3",
+				"attack.mp3",
+				"door.mp3",
+				"item.mp3",
+				"equip.mp3",
+				"zone.mp3",
+				"jump.mp3",
+				"pickaxe.mp3",
+				"bomb.mp3",
+				"centerFly.mp3"
+			],
+		},
 		"nameMap": {
 			"背景图.jpg": "bg.jpg",
 			"背景音乐.mp3": "bgm.mp3"

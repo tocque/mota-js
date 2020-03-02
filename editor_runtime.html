@@ -169,6 +169,7 @@
 <script id='mainScript' src='../main.js'></script>
 <!-- 编辑器配置 -->
 <script>
+    var logs = [];
     window._editor__setHooks__ = function(res) {
         const loadJs = main.loadJs;
         main.loadJs = function(...args) {
@@ -178,8 +179,8 @@
         const loadFloors = main.loadFloors // 劫持loadFloors函数
         main.loadFloors = function(cb) {
             const _load = core.loader._load;
-            core.loader._load = function(callback) {
-                _load.call(core.loader, function(...args) {
+            core.loader._load = function(list, callback) {
+                _load.call(core.loader, list, function(...args) {
                     res.imagesLoad();
                     callback(...args);
                 });
@@ -194,42 +195,7 @@
             });
         }
     };
-    // window._editor__hooks__ = (() => {
-    //     let hooksattach = {};
-    //     let hooks = {
-    //         afterDataLoad: new Promise((res) => {
-    //             const ori = main.loadJs;
-    //             main.loadJs = function(...args) {
-    //                 if (args[0] == 'libs') {
-    //                     res();
-    //                 }
-    //                 ori(...args);
-    //             }
-    //         }),
-    //         afterLibLoad: new Promise((res) => {
-    //             hooksattach.afterFloorsLoad = new Promise((resa) => {
-    //                 hooksattach.afterImagesLoad = new Promise((resa2) => {
-    //                     const ori = main.loadFloors // 劫持loadFloors函数
-    //                     main.loadFloors = function(cb) {
-    //                         const ori2 = core.loader._load;
-    //                         core.loader._load = function(callback) {
-    //                             ori2.call(core.loader, function(...args) {
-    //                                 resa2();
-    //                                 callback(...args);
-    //                             });
-    //                         };
-    //                         res();
-    //                         ori(function(...args) {
-    //                             resa();
-    //                             cb(...args);
-    //                         });
-    //                     }
-    //                 })
-    //             })
-    //         }),
-    //     }
-    //     return Object.assign(hooks, hooksattach);
-    // })();
+    main.log = (e) => logs.push(e);
     main.useCompress = false;
     window.editor = window.parent.editor;
 </script>

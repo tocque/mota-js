@@ -229,7 +229,7 @@ core.prototype.init = function (coreData, callback) {
     this._init_others();
     this._initPlugins();
 
-    core.loader._load(function () {
+    core.loader._load(core.loadList, function () {
         core.extensions._load(function () {
             core._afterLoadResources(callback);
         });
@@ -374,8 +374,6 @@ core.prototype._init_others = function () {
     core.material.groundCanvas.canvas.width = core.material.groundCanvas.canvas.height = 32;
     core.material.groundPattern = core.material.groundCanvas.createPattern(core.material.groundCanvas.canvas, 'repeat');
     core.bigmap.tempCanvas = document.createElement('canvas').getContext('2d');
-    core.loadImage('materials', 'fog.png', function (name, img) { core.animateFrame.weather.fog = img; });
-    core.loadImage('materials', 'keyboard.png', function (name, img) {core.material.images.keyboard = img; });
     // 记录存档编号
     core.saves.saveIndex = core.getLocalStorage('saveIndex', 1);
     core.control.getSaveIndexes(function (indexes) { core.saves.ids = indexes; });
@@ -410,8 +408,8 @@ core.prototype._initPlugins = function () {
 }
 
 core.prototype._forwardFuncs = function () {
-    for (var i = 0; i < main.loadList.length; ++i) {
-        var name = main.loadList[i];
+    for (var i = 0; i < main.libs.length; ++i) {
+        var name = main.libs[i];
         if (name == 'core') continue;
         this._forwardFunc(name);
     }
