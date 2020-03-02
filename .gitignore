@@ -54,3 +54,7 @@ crashlytics-build.properties
 fabric.properties
 
 _server/css/editor_skin.css
+
+# vue dev
+_server/thirdparty/vue.js
+_server/thirdparty/vuex.js
