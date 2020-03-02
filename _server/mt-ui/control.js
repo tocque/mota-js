@@ -1,4 +1,18 @@
-Vue.component("mt-switch", {
+export const MtBtn = {
+    name: "mt-btn",
+    functional: true,
+    render(h, ctx) {
+        if (!ctx.class) ctx.class = [];
+        if (!(ctx.class instanceof Array)) ctx.class = [ctx.class];
+        ctx.class.push("mt-btn");
+        if (ctx.props.mini != null) ctx.class.push("__mini");
+        ctx.on = ctx.listeners;
+        return h('button', ctx, ctx.children);
+    },
+}
+
+export const MtSwitch = {
+    name: "mt-switch",
     template: /* HTML */`
     <div @click="$emit('toggle', !checked)" 
         class="mt-switch" :class="{ on: checked }"
@@ -13,13 +27,14 @@ Vue.component("mt-switch", {
     props: {
         checked: Boolean
     },
-})
+};
 
-Vue.component("mt-search", {
+export const MtSearch = {
+    name: "mt-search",
     inheritAttrs: false,
     template: /* HTML */`
-        <div class="inputSet">
-            <input type="text" v-model="value" v-bind="$attrs"
+        <div class="mt-search">
+            <input class="mt-input" type="text" v-model="value" v-bind="$attrs"
                 @change="onChange" @keydown.enter="e => onChange(e, true)"
             />
             <div @click="clear" class="clearBtn" :class="{ disabled: value == '' }">
@@ -42,4 +57,4 @@ Vue.component("mt-search", {
             if (this.immediate || force) this.$emit("change", this.value);
         },
     }
-});
+};
