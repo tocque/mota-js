@@ -38,15 +38,20 @@ Vue.component('code-editor', {
         <div v-show="active" class="code-editor">
             <slot></slot>
             <div class="multi-container" ref="container"></div>
-            <status-item v-show="active" left>
+            <status-item v-if="nostatus != ''" v-show="active" left>
                 <i class="codicon codicon-error"></i> {{ error }}
                 <i class="codicon codicon-warning"></i> {{ warn }}
             </status-item>
-            <status-item v-show="active">Ln {{ line }}, Col {{col}}</status-item>
-            <status-item v-show="active">{{ lang }}</status-item>
+            <status-item v-if="nostatus != ''" v-show="active">Ln {{ line }}, Col {{col}}</status-item>
+            <status-item v-if="nostatus != ''" v-show="active">{{ lang }}</status-item>
         </div>
     `,
-    props: ["lang", "active"],
+    props: {
+        "lang": { default: "plaintext" }, 
+        "active": { default: true },
+        "text": { default: "text" },
+        "nostatus": { default: false },
+    },
     data() {
         return {
             line: 1,
@@ -73,16 +78,18 @@ Vue.component('code-editor', {
             condition: () => _this.active,
             prevent: true,
         })
-        window.res = this.multi;
     },
     methods: {
-        setValue() {
-
+        setValue(value) {
+            this.multi.setValue(value);
+        },
+        getValue(value) {
+            return this.multi.getValue(value);
         },
         load(node) {
             if (!node.model) {
                 node.verison = 0;
-                node.model = monaco.editor.createModel(node.text, this.lang)
+                node.model = monaco.editor.createModel(node[this.text], this.lang)
             }
             this.node = node;
             this.multi.setModel(node.model);
@@ -101,8 +108,7 @@ Vue.component('code-editor', {
                 else error++;
             }
             this.error = error, this.warn = warn;
-            window.tes = this.node.model;
-            this.node.editted = this.checkEdit(this.node);
+            if (this.node) this.node.editted = this.checkEdit(this.node);
         },
         oncursor(e) {
             this.line = e.position.lineNumber, this.col = e.position.column;
@@ -112,7 +118,7 @@ Vue.component('code-editor', {
                 this.node.verison = this.node.model._commandManager.past.length;
                 this.node.editted = false;
                 this.multi.pushUndoStop();
-                this.node.text = this.node.model.getValue();
+                this.node[this.text] = this.node.model.getValue();
                 this.$emit('save', this.node);
             }
         }

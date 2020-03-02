@@ -3,17 +3,14 @@ import * as util from "./editor_util.js"
 import * as file from "./editor_file.js"
 import game from "./editor_game.js"
 import listen from "./editor_listen.js"
-import render from "./editor_render.js"
 import service from "./editor_service.js"
 
 const libs = {
-    util, game, ui, listen, service, render, file
+    util, game, ui, listen, service, file
 };
 
 class editor {
     version = "2.0";
-    mainPanels = {};
-    panels = {};
 
     proJectName = ''; // vue监听
 
@@ -31,8 +28,8 @@ class editor {
             }
         }
 
-        [this.userdata, this.towerInfo, this.window] = await Promise.all([
-            new file.config("./_server/config.json"),
+        this.userdata = await new file.config("./_server/config.json");
+        [this.towerInfo, this.window] = await Promise.all([
             new file.config("./work.h5mota"),
             import('./editor_window.js'),
             game.hooks.floorsLoad
@@ -49,7 +46,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     const string = msg.toLowerCase();
     const substring = "script error";
     let message;
-    if (string.indexOf(substring) > -1){
+    if (string.includes(substring)){
         message = '脚本错误: 查看浏览器控制台(F12)以获得详细信息';
         try {
             editor.window.$notify.error(msg);

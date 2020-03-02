@@ -16,8 +16,8 @@ export default new class inputManager {
             path.push(currentElem);
             currentElem = currentElem.parentElement;
         }
-        if (path.indexOf(window) === -1) {
-            if (path.indexOf(document) === -1) {
+        if (!path.includes(window)) {
+            if (!path.includes(document)) {
                 path.push(document);
             }
             path.push(window);
@@ -74,9 +74,9 @@ export default new class inputManager {
             else {
                 let modifier = keyCode.toLowerCase().split(".");
                 keyCode = modifier.shift();
-                if (modifier.indexOf("alt") !== -1) spec += "alt";
-                if (modifier.indexOf("ctrl") !== -1) spec += "ctrl";
-                if (modifier.indexOf("shift") !== -1) spec += "shift";
+                if (modifier.includes("alt")) spec += "alt";
+                if (modifier.includes("ctrl")) spec += "ctrl";
+                if (modifier.includes("shift")) spec += "shift";
                 if (spec === "") spec = "normal";
                 try {
                     keyCode = translateKeyCode(keyCode);

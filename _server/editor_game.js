@@ -1,74 +1,268 @@
-editor_game_wrapper = function (editor, main, core) {
-    // 原则上重构后只有此文件允许`\s(main|core)`形式的调用, 以及其初始化 editor_game_wrapper(editor, main, core)
+/**
+ * editor_game.js 游戏运行时的类
+ * 原则上其他部分获取游戏信息均需要通过此处, 若玩家自行修改游戏, 对应获取信息的更改也均在此处调整
+ */
 
-    editor_game = function () {
-        this.replacerRecord = {}
+import { ftools, jsFile } from "./editor_file.js";
+import { createGuid } from "./editor_util.js";
+
+const project = {
+    data: "_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d",
+    maps: "_90f36752_8815_4be8_b32b_d7fad1d0542e",
+    items: "_296f5d02_12fd_4166_a7c1_b5e830c9ee3a",
+    icons: "_4665ee12_3a1f_44a4_bea3_0fccba634dc1",
+    enemys: "_fcae963b_31c9_42b4_b48c_bb48d09f3f80",
+    events: "_c12a15a8_c380_4b28_8144_256cba95f760",
+    plugins: "_bb40132b_638b_4a9f_b028_d3fe47acc8d1",
+    functions: "_d6ad677b_427a_4623_b50f_a445a3b0ef8a",
+}
+
+const defaultMap = {
+    "floorId": "to be covered",
+    "title": "new floor",
+    "name": "new floor",
+    "width": 13,
+    "height": 13,
+    "canFlyTo": true,
+    "canUseQuickShop": true,
+    "cannotViewMap": false,
+    "cannotMoveDirectly": false,
+    "images": [],
+    "item_ratio": 1,
+    "underGround": false,
+    "defaultGround": "ground",
+    "bgm": null,
+    "upFloor": null,
+    "downFloor": null,
+    "color": null,
+    "weather": null,
+    "firstArrive": [],
+    "eachArrive": [],
+    "parallelDo": "",
+    "events": {},
+    "changeFloor": {},
+    "afterBattle": {},
+    "afterGetItem": {},
+    "afterOpenDoor": {},
+    "autoEvent": {},
+    "cannotMove": {}
+}
+
+class map extends jsFile {
+    constructor(mapid, data) {
+        super(`./project/floors/${mapid}.js`, data, `main.floors.${mapid}=\n`, {
+            stringifier: function(data) {
+                const tempJsonObj = Object.assign({}, data);
+                const tempMap = ['map', 'bgmap','fgmap'].map(key => {
+                    const value = [key, createGuid(), tempJsonObj[key]];
+                    tempJsonObj[key] = value[1];
+                    return value;
+                });
+                let tempJson = JSON.stringify(tempJsonObj, ftools.replacerForSaving, 4);
+                tempMap.forEach(function (v) {
+                    tempJson = tempJson.replace(`"${v[1]}"`, `[\n${ftools.formatMap(v[2], v[0] != 'map')}\n]`)
+                });
+                return tempJson;
+            }
+        });
+        this.addEmitter('afterSave', function(h, str) {
+            //editor.addUsedFlags(str);
+        });
+    }
+}
+
+export default new class gameRuntime {
+
+    /** 游戏数据 */
+    data = {};
+    /** 
+     * 生命周期钩子, 均为Promise
+     */
+    hooks = {};
+    __resolves__ = {} // 生命周期钩子的resolve函数存放在此
+
+    maps = {};
+
+    /////// 初始化方法 ////////
+
+    constructor() {
+        this.iframe = document.createElement("iframe");
+        this.iframe.style.display = "none";
+        document.body.appendChild(this.iframe);
+        this.runtime = this.iframe.contentWindow;
+        this.document = this.iframe.document;
+        this.createHooks([
+            'iframeLoad', 'dataLoad', 'libLoad', 'floorsLoad', 'imagesLoad', 'initOver'
+        ]);
+        this.load();
+
+        // 设置钩子对应事件
+        this.hooks.dataLoad.then(function() {
+            this.wrapData();
+            this.mapList = this.main.floorIds;
+        }.bind(this))
+
+        this.hooks.floorsLoad.then(function() {
+            this.wrapMaps();
+        }.bind(this))
     }
 
+    load() {
+        const res = this.__resolves__;
+        this.iframe.onload = function() {
+            this.runtime._editor__setHooks__(res);
+            this.main = this.runtime.main;
+            this.main.init('editor', function () {
+                this.core = this.runtime.core;
+                res.initOver();
+            }.bind(this));
+            res.iframeLoad(this);
+        }.bind(this)
+        this.iframe.src = "./editor_runtime.html";
+    }
 
-    //////////////////// 修改数据相关 ////////////////////
-    // 三个 replacer 和 replacerRecord 暂时放在此处
-
-    editor_game.prototype.replacerForLoading = function (_key, value) {
-        var rmap = editor.game.replacerRecord;
-        if (value instanceof Function) {
-            var guid_ = editor.util.guid()
-            rmap[guid_] = value.toString()
-            return guid_
-        } else if (value === null) {
-            // 为了包含plugins的新建
-            var guid_ = editor.util.guid()
-            rmap[guid_] = null
-            return guid_
+    createHooks(hooks) {
+        const resolves = this.__resolves__;
+        for (let h of hooks) {
+            this.hooks[h] = new Promise((res, rej) => {
+                resolves[h] = () => { console.log("======"+h+"======"); res() };
+            });
         }
-        return value
     }
 
-    editor_game.prototype.replacerForSaving = function (_key, value) {
-        var rmap = editor.game.replacerRecord;
-        if (rmap.hasOwnProperty(value)) {
-            return rmap[value]
+    wrapData() {
+        const normalFormat = function(data) {
+            return JSON.stringify(data, ftools.replacerForSaving, '\t');
         }
-        return value
-    }
-
-    editor_game.prototype.getValue = function (field) {
-        var rmap = editor.game.replacerRecord;
-        var value = eval(field)
-        if (rmap.hasOwnProperty(oldval)) {
-            return rmap[value]
-        } else {
-            return value
+        const listFormat = function(data) {
+            // 只用\t展开第一层
+            let emap = {};
+            let estr = JSON.stringify(data, function (_k, v) {
+                if (v.id != null) {
+                    const id_ = createGuid();
+                    emap[id_] = JSON.stringify(v, ftools.replacerForSaving);
+                    return id_;
+                } else return v
+            }, '\t');
+            for (let id_ in emap) {
+                estr = estr.replace('"' + id_ + '"', emap[id_]);
+            }
+            return estr;
         }
-    }
-
-    editor_game.prototype.setValue = function (field, value) {
-        var rmap = editor.game.replacerRecord;
-        var oldval = eval(field)
-        if (rmap.hasOwnProperty(oldval)) {
-            rmap[value] = eval(value)
-        } else {
-            eval(field + '=' + value)
+        for (let n in project) {
+            const name = n+project[n];
+            this.data[n] = new jsFile(`./project/${n}.js`, this.runtime[name], `var ${name} = \n`, {
+                stringifier: ['maps', 'enemys'].some(e => e === n) ? listFormat : normalFormat,
+            });
         }
     }
 
-    editor_game.prototype.replacerWithoutRecord = function (_key, value) {
-        if (value instanceof Function) {
-            return value.toString()
-        } else return value
+    wrapMaps() {
+        let maps = this.main.floors;
+        for (let m in maps) {
+            this.maps[m] = new map(m, Object.assign({}, defaultMap, maps[m]));
+        }
     }
 
-    editor_game.prototype.fixFunctionInGameData = function () {
-        var rf = editor.game.replacerWithoutRecord
-        core.floors = JSON.parse(JSON.stringify(core.floors, rf));
-        core.data = JSON.parse(JSON.stringify(core.data, rf));
-        data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d = JSON.parse(JSON.stringify(data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d, rf));
+    buildMapTree(mapStruct) {
+        const decodeMapStruct = function(arr, attach) {
+            let output = [], record = {};
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i] instanceof Array) {
+                    let { output: o, record: r } = decodeMapStruct(arr[i], attach);
+                    output[output.length-1].children = o;
+                    record = Object.assign({}, record, r);
+                } else {
+                    output.push({ mapid: arr[i], map: attach[arr[i]] });
+                    record[arr[i]] = true;
+                }
+            }
+            return { output, record };
+        }
+
+        let { output, record } = decodeMapStruct(mapStruct, this.maps);
+        for (let mapid of this.mapList) {
+            if (!record[mapid]) {
+                output.push({ mapid, map: this.maps[mapid] });
+            }
+        }
+        this.mapTree = output;
     }
 
-    //////////////////// 加载游戏数据相关 ////////////////////
+    apply(func, ...rest) {
+        return this.core[func].apply(this.core, rest);
+    }
 
-    // 初始化数字与地图图块的对应
-    editor_game.prototype.idsInit = function (maps, icons) {
+    //////// 获取游戏信息的方法 ////////
+
+    /** 获取工程名称 */
+    getProjectName() {
+        return this.data.data.access("firstData.title");
+    }
+
+    /** 
+     * 获取地图列表
+     * @returns {Array<String>}
+     */
+    getMapList() {
+        return this.mapList;
+    }
+
+    /** 获取地图文件列表 */ 
+    async getMapFileList() {
+        return new Promise((res, rej) => {
+            editor.fs.readdir('project/floors', function(err, data) {
+                if (err) rej(err);
+                else res(data);
+            });
+        })
+    }
+
+    /** 
+     * 获取游戏地图
+     */
+    getMaps() {
+        return this.maps;
+    }
+
+    /** 获取当前地图 */
+    fetchMap() {
+        var mapArray = core.maps.saveMap(core.status.floorId);
+        editor.map = mapArray.map(function (v) {
+            return v.map(function (v) {
+                var x = parseInt(v), y = editor.indexs[x];
+                if (y == null) {
+                    printe("素材数字" + x + "未定义。是不是忘了注册，或者接档时没有覆盖icons.js和maps.js？");
+                    y = [0];
+                }
+                return editor.ids[y[0]]
+            })
+        });
+        editor.currentFloorId = core.status.floorId;
+        editor.currentFloorData = core.floors[core.status.floorId];
+        // 补出缺省的数据
+        editor.currentFloorData.autoEvent = editor.currentFloorData.autoEvent || {};
+        //
+        for (var ii = 0, name; name = ['bgmap', 'fgmap'][ii]; ii++) {
+            var mapArray = editor.currentFloorData[name];
+            if (!mapArray || JSON.stringify(mapArray) == JSON.stringify([])) {//未设置或空数组
+                //与editor.map同形的全0
+                mapArray = eval('[' + Array(editor.map.length + 1).join('[' + Array(editor.map[0].length + 1).join('0,') + '],') + ']');
+            }
+            editor[name] = mapArray.map(function (v) {
+                return v.map(function (v) {
+                    var x = parseInt(v), y = editor.indexs[x];
+                    if (y == null) {
+                        printe("素材数字" + x + "未定义。是不是忘了注册，或者接档时没有覆盖icons.js和maps.js？");
+                        y = [0];
+                    }
+                    return editor.ids[y[0]]
+                })
+            });
+        }
+    }
+
+    idsInit(maps, icons) {
         editor.ids = [0];
         editor.indexs = [];
         var MAX_NUM = 0;
@@ -133,65 +327,53 @@ editor_game_wrapper = function (editor, main, core) {
         }
     }
 
-    // 获取当前地图
-    editor_game.prototype.fetchMapFromCore = function () {
-        var mapArray = core.maps.saveMap(core.status.floorId);
-        editor.map = mapArray.map(function (v) {
-            return v.map(function (v) {
-                var x = parseInt(v), y = editor.indexs[x];
-                if (y == null) {
-                    printe("素材数字" + x + "未定义。是不是忘了注册，或者接档时没有覆盖icons.js和maps.js？");
-                    y = [0];
-                }
-                return editor.ids[y[0]]
+    getResourceFolders() {
+        return [
+            { label: "动画", path: "animates", type: "animate", suffix: ".animate" },
+            { label: "元件", path: "tiles", type: "image", src: h => h.main.materials, opt: "append", suffix: ".png" },
+            { label: "元件组", path: "tilesets", type: "image" },
+            { label: "自动元件", path: "autotiles", modify: this.updateAutotiles, type: "image", suffix: ".png" },
+            { label: "图片", path: "images", type: "image" },
+            { label: "音乐", path: "bgms", type: "music" },
+            { label: "音效", path: "sounds", type: "music" },
+            { label: "系统图片", path: "system", type: "image", src: h => h.main.systemMaterials, opt: "const", suffix: ".png" },
+        ]
+    }
+
+    getResourceList(folder) {
+        let registered = [];
+        if (folder.src) {
+            registered = folder.src(this);
+        } else {
+            let route = '[main]';
+            switch(folder.type) {
+                case "music": route += '[audios]'; break;
+                case "image": route += '[resources]'; break;
+            }
+            route += `[${folder.path}]`;
+            registered = this.data.data.access(route);
+        }
+        console.log(this.main);
+        if (folder.suffix) registered = registered.map(e => e + folder.suffix)
+        return registered;
+    }
+
+
+    /** 获取资源列表 */
+    async readResourceDir(folder) {
+        return await new Promise((res, rej) => {
+            fs.readdir('./project/'+folder.path, (err, data) => {
+                if (err) rej(err);
+                else res(data);
             })
         });
-        editor.currentFloorId = core.status.floorId;
-        editor.currentFloorData = core.floors[core.status.floorId];
-        // 补出缺省的数据
-        editor.currentFloorData.autoEvent = editor.currentFloorData.autoEvent || {};
-        //
-        for (var ii = 0, name; name = ['bgmap', 'fgmap'][ii]; ii++) {
-            var mapArray = editor.currentFloorData[name];
-            if (!mapArray || JSON.stringify(mapArray) == JSON.stringify([])) {//未设置或空数组
-                //与editor.map同形的全0
-                mapArray = eval('[' + Array(editor.map.length + 1).join('[' + Array(editor.map[0].length + 1).join('0,') + '],') + ']');
-            }
-            editor[name] = mapArray.map(function (v) {
-                return v.map(function (v) {
-                    var x = parseInt(v), y = editor.indexs[x];
-                    if (y == null) {
-                        printe("素材数字" + x + "未定义。是不是忘了注册，或者接档时没有覆盖icons.js和maps.js？");
-                        y = [0];
-                    }
-                    return editor.ids[y[0]]
-                })
-            });
-        }
     }
 
-    // 获取地图列表
-    editor_game.prototype.getFloorFileList = function (callback) {
-        // callback([Array<String>,err:String])
-        editor.util.checkCallback(callback);
-        /* editor.fs.readdir('project/floors',function(err, data){
-          callback([data,err]);
-        }); */
-        callback([editor.core.floorIds, null]);
+    updateAutotiles() {
+
     }
 
-    editor_game.prototype.doCoreFunc = function (funcname) {
-        return core[funcname].apply(core, Array.prototype.slice.call(arguments, 1));
-    }
+    registerBlock() {
 
-    editor_game.prototype.getEnemy = function (id) {
-        return core.material.enemys[id];
     }
-
-    editor_game.prototype.getFirstData = function () {
-        return core.firstData;
-    }
-
-    editor.constructor.prototype.game = new editor_game();
 }
-//editor_game_wrapper(editor);

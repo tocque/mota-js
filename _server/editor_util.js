@@ -12,23 +12,6 @@
         }).join('');
     }
 
-    export const getPixel = function (imgData, x, y) {
-        var offset = (x + y * imgData.width) * 4;
-        var r = imgData.data[offset + 0];
-        var g = imgData.data[offset + 1];
-        var b = imgData.data[offset + 2];
-        var a = imgData.data[offset + 3];
-        return [r, g, b, a];
-    }
-
-    export const setPixel = function (imgData, x, y, rgba) {
-        var offset = (x + y * imgData.width) * 4;
-        imgData.data[offset + 0] = rgba[0];
-        imgData.data[offset + 1] = rgba[1];
-        imgData.data[offset + 2] = rgba[2];
-        imgData.data[offset + 3] = rgba[3];
-    }
-
     // rgbToHsl hue2rgb hslToRgb from https://github.com/carloscabo/colz.git
     //--------------------------------------------
     // The MIT License (MIT)
@@ -55,7 +38,7 @@
     //--------------------------------------------
     // https://github.com/carloscabo/colz/blob/master/public/js/colz.class.js
     var round = Math.round;
-    const rgbToHsl = function (rgba) {
+    export const rgbToHsl = function (rgba) {
         var arg, r, g, b, h, s, l, d, max, min;
 
         arg = rgba;
@@ -101,7 +84,7 @@
         return [h, s, l];
     }
     //
-    const hue2rgb = function (p, q, t) {
+    export const hue2rgb = function (p, q, t) {
         if (t < 0) { t += 1; }
         if (t > 1) { t -= 1; }
         if (t < 1 / 6) { return p + (q - p) * 6 * t; }
@@ -109,7 +92,7 @@
         if (t < 2 / 3) { return p + (q - p) * (2 / 3 - t) * 6; }
         return p;
     }
-    const hslToRgb = function (hsl) {
+    export const hslToRgb = function (hsl) {
         var arg, r, g, b, h, s, l, q, p;
 
         arg = hsl;
@@ -164,13 +147,13 @@
         if (!isset(data)) return null;
         // date
         if (data instanceof Date) {
-            return new Date(data.getTime());
+            return new Date(data);
         }
         // array
-        if (data instanceof Array) {
-            let copy = [];
-            for (let i in data) {
-                copy[i] = this.clone(data[i]);
+        if (Array.isArray(data)) {
+            const copy = new Array(data.length);
+            for (let i = 0; i < data.length; i++) {
+                copy[i] = clone(data[i]);
             }
             return copy;
         }

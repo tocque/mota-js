@@ -1,4 +1,4 @@
-import { createGuid } from "./editor_util.js";
+import { createGuid, clone } from "./editor_util.js";
 
 let alertedCompress = false;
 
@@ -12,6 +12,12 @@ const checkCompress = function() {
 }
 
 let replacerRecord = {}
+
+const fileIcons = {
+    "png": "file-media",
+    "jpg": "file-media",
+    "mp3": "ummte",
+}
 
 export const ftools = {
     functionProcess(data, pool) {
@@ -58,6 +64,10 @@ export const ftools = {
             return replacerRecord[value]
         }
         return value
+    },
+    getIcon(fileName) {
+        const suffix = fileName.split(".")[1];
+        return fileIcons[suffix] || "file";
     }
 }
 
@@ -185,9 +195,10 @@ export class jsFile {
                 data = data[route[i]];
             }
             const key = route[route.length-1];
+            const value = clone(command.value);
             if (typeof data[key] === 'string' && this.functionPool[data[key]]) {
-                this.functionPool[data[key]] = command.value;
-            } else data[key] = command.value;
+                this.functionPool[data[key]] = value;
+            } else data[key] = value;
         }
         return this.save();
     }
