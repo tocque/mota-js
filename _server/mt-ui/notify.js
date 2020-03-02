@@ -14,13 +14,13 @@ Vue.use(function() {
                 <div class="source" v-if="source">来自: {{ source }}</div>
                 <ul class="buttonGroup" v-if="buttons.length">
                     <li v-for="(button, index) of buttons" :key="index">
-                        <input type="button" :value="button.text" @click="close(button.action)"/>
+                        <mt-btn @click="close(button.action)">{{ button.text }}</mt-btn>
                     </li>
                 </ul>
             </div>
         </div>
         `,
-        props: ["config", "source", "buttons"],
+        props: ["config", "source", "buttons", "onclose"],
         created: function() {
             const _this = this;
             if (this.config.time > 0) {
@@ -31,8 +31,8 @@ Vue.use(function() {
             }
         },
         methods: {
-            close(action) {
-                if (action) action();
+            close() {
+                if (this.onclose) this.onclose();
                 this.$parent.$parent.close(this.config);
             },
         }

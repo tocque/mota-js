@@ -1,7 +1,7 @@
 import { isset } from "../editor_util.js";
 
 /**
- * 标签页组件, 导航类的基组件
+ * 标签组件, 导航类的基组件
  */
 export const MtTabs = {
     name: "mt-tabs",
@@ -32,8 +32,8 @@ export const MtTabs = {
         }
     },
     methods: {
-        switchTab(tab) {
-            if (isset(this.allowUnchose) && tab.id == this.chosen) {
+        switchTab(tab, force) {
+            if (!force && isset(this.allowUnchose) && tab.id == this.chosen) {
                 this.chosen = null;
                 this.$emit('switch', null);
             } else {
@@ -225,4 +225,23 @@ export const MtView = {
         }
     },
     components: { MtIcon },
+}
+
+/** 列表 */
+export const MtList = {
+    name: "mt-list",
+    template: /* HTML */`
+    `,
+    props: ["items"],
+    data() {
+        return {
+            chosen: null,
+        }
+    },
+    methods: {
+        chose(item, index) {
+            this.chosen = index;
+            this.$emit("chose", item, index);
+        },
+    }
 }
