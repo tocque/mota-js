@@ -314,61 +314,54 @@ export const blockList = function() {
                 ]
             },'event'),
         ],
-        '最近使用事件': function searchBlockCategoryCallback (workspace) {
-            var xmlList = [];
-            const labels = editor_blockly.searchBlock();
-            for (var i = 0; i < labels.length; i++) {
-                const blockText = `<xml>${MotaActionBlocks[labels[i]].xmlText()}</xml>`;
-                const block = Blockly.Xml.textToDom(blockText).firstChild;
-                block.setAttribute("gap", 5);
-                xmlList.push(block);
-            }
-            return xmlList;
-        }
     }
 }
 
-export let selectPointBlocks = {
-    "changeFloor_m": ["Number_0", "Number_1", "IdString_0", true],
-    "jumpHero_s": ["PosString_0", "PosString_1"],
-    "changeFloor_s": ["PosString_0", "PosString_1", "IdString_0", true],
-    "changePos_0_s": ["PosString_0", "PosString_1"],
-    "battle_1_s": ["PosString_0", "PosString_1"],
-    "openDoor_s": ["PosString_0", "PosString_1", "IdString_0"],
-    "closeDoor_s": ["PosString_0", "PosString_1"],
-    "show_s": ["EvalString_0", "EvalString_1", "IdString_0"],
-    "hide_s": ["EvalString_0", "EvalString_1", "IdString_0"],
-    "setBlock_s": ["EvalString_1", "EvalString_2", "IdString_0"],
-    "move_s": ["PosString_0", "PosString_1"],
-    "jump_s": ["PosString_2", "PosString_3"], // 跳跃暂时只考虑终点
-    "showBgFgMap_s": ["EvalString_0", "EvalString_1", "IdString_0"],
-    "hideBgFgMap_s": ["EvalString_0", "EvalString_1", "IdString_0"],
-    "setBgFgBlock_s": ["EvalString_1", "EvalString_2", "IdString_0"],
-    "showFloorImg_s": ["EvalString_0", "EvalString_1", "IdString_0"],
-    "hideFloorImg_s": ["EvalString_0", "EvalString_1", "IdString_0"],
-    "trigger_s": ["PosString_0", "PosString_1"],
-    "insert_2_s": ["PosString_0", "PosString_1", "IdString_0"],
-    "animate_s": ["EvalString_0", "EvalString_0"],
-    "setViewport_s": ["PosString_0", "PosString_1"]
-}
+// export let selectPointBlocks = {
+//     "changeFloor_m": ["Number_0", "Number_1", "IdString_0", true],
+//     "jumpHero_s": ["PosString_0", "PosString_1"],
+//     "changeFloor_s": ["PosString_0", "PosString_1", "IdString_0", true],
+//     "changePos_0_s": ["PosString_0", "PosString_1"],
+//     "battle_1_s": ["PosString_0", "PosString_1"],
+//     "openDoor_s": ["PosString_0", "PosString_1", "IdString_0"],
+//     "closeDoor_s": ["PosString_0", "PosString_1"],
+//     "show_s": ["EvalString_0", "EvalString_1", "IdString_0"],
+//     "hide_s": ["EvalString_0", "EvalString_1", "IdString_0"],
+//     "setBlock_s": ["EvalString_1", "EvalString_2", "IdString_0"],
+//     "move_s": ["PosString_0", "PosString_1"],
+//     "jump_s": ["PosString_2", "PosString_3"], // 跳跃暂时只考虑终点
+//     "showBgFgMap_s": ["EvalString_0", "EvalString_1", "IdString_0"],
+//     "hideBgFgMap_s": ["EvalString_0", "EvalString_1", "IdString_0"],
+//     "setBgFgBlock_s": ["EvalString_1", "EvalString_2", "IdString_0"],
+//     "showFloorImg_s": ["EvalString_0", "EvalString_1", "IdString_0"],
+//     "hideFloorImg_s": ["EvalString_0", "EvalString_1", "IdString_0"],
+//     "trigger_s": ["PosString_0", "PosString_1"],
+//     "insert_2_s": ["PosString_0", "PosString_1", "IdString_0"],
+//     "animate_s": ["EvalString_0", "EvalString_0"],
+//     "setViewport_s": ["PosString_0", "PosString_1"]
+// }
 
-export let previewBlocks = [
-    "previewUI_s", "clearMap_s", "clearMap_1_s", "setAttribute_s", "fillText_s",
-    "fillBoldText_s", "drawTextContent_s", "fillRect_s", "strokeRect_s", "drawLine_s",
-    "drawArrow_s", "fillPolygon_s", "strokePolygon_s", "fillCircle_s", "strokeCircle_s",
-    "drawImage_s", "drawImage_1_s", "drawIcon_s", "drawBackground_s", "drawSelector_s", "drawSelector_1_s"
-];
+// export let previewBlocks = [
+//     "previewUI_s", "clearMap_s", "clearMap_1_s", "setAttribute_s", "fillText_s",
+//     "fillBoldText_s", "drawTextContent_s", "fillRect_s", "strokeRect_s", "drawLine_s",
+//     "drawArrow_s", "fillPolygon_s", "strokePolygon_s", "fillCircle_s", "strokeCircle_s",
+//     "drawImage_s", "drawImage_1_s", "drawIcon_s", "drawBackground_s", "drawSelector_s", "drawSelector_1_s"
+// ];
 
-export let textStringDict = {
-    'text_0_s': 'EvalString_0',
-    'text_1_s': 'EvalString_2',
-    'autoText_s': 'EvalString_2',
-    'scrollText_s': 'EvalString_0',
-    'comment_s': 'EvalString_0',
-    'choices_s': 'EvalString_0',
-    'showTextImage_s': 'EvalString_0',
-    'function_s': 'RawEvalString_0',
-    'shopsub': 'EvalString_3',
-    'confirm_s': 'EvalString_0',
-    'drawTextContent_s': 'EvalString_0',
-}
+// export let textStringDict = {
+//     'text_0_s': 'EvalString_0',
+//     'text_1_s': 'EvalString_2',
+//     'autoText_s': 'EvalString_2',
+//     'scrollText_s': 'EvalString_0',
+//     'comment_s': 'EvalString_0',
+//     'choices_s': 'EvalString_0',
+//     'showTextImage_s': 'EvalString_0',
+//     'function_s': 'RawEvalString_0',
+//     'shopsub': 'EvalString_3',
+//     'confirm_s': 'EvalString_0',
+//     'drawTextContent_s': 'EvalString_0',
+// }
+
+// export const widgets = [
+//     "colorpicker", "posselector", "texteditor", "uipreviewer", "audioselector", "imageselector"
+// ]

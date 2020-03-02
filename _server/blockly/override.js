@@ -1,6 +1,11 @@
 /**
  * override.js 对Blockly内部实现的复写
  */
+Blockly.Generator.prototype.scrub_ = function(_block, code) {
+    console.log(code);
+    // Optionally override
+    return code;
+};
 
 Blockly.FieldColour.prototype.createWidget_ = function() {
     Blockly.WidgetDiv.hide();
