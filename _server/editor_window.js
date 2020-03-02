@@ -7,14 +7,18 @@
 import game from "./editor_game.js"
 import "./thirdparty/elementUI/elementui.umd.min.js"
 
+import "./mt-ui/core.js"
+
 import blocklyEditor from "./editor_blockly.js"
 import "./editor_multi.js"
 
 import mapPanel from "./panels/map_panel/map_panel.js"
+import eventPanel from "./panels/event_panel/event_panel.js"
+import resourcePanel from "./panels/resource_panel/resource_panel.js"
 import scriptPanel from "./panels/script_panel/script_panel.js"
 
 let mainPanels = {
-    mapPanel, scriptPanel
+    mapPanel, eventPanel, resourcePanel, scriptPanel
 }
 
 Vue.component("status-item", {
@@ -37,23 +41,27 @@ let window = {
         message: '',
         statusRight: [],
     },
+    provide() {
+        return {
+            openBlockly: this.openBlockly,
+        }
+    },
     created() {
         Vue.prototype.$print = this.print.bind(this);
         Vue.prototype.$clear = this.clear.bind(this);
         Vue.prototype.$injectStatusItem = this.injectStatusItem.bind(this);
-        editor.openBlockly = this.openBlockly;
 
         this.projectName = game.getProjectName();
         this.mainPanels = this.mainPanels.concat(Object.entries(mainPanels)
-            .map(e => { return { id: e[0], label: e[1].label };}));
+            .map(e => ({ id: e[0], label: e[1].label })));
     },
     methods: {
-        print: function (str, type) {
+        print(str, type) {
             this.message = str;
             if (!type) type = "normal";
             this.messageType = type;
         },
-        clear: function(value) {
+        clear(value) {
             var tips = [
                 '表格的文本域可以双击进行编辑',
                 '双击地图可以选中素材，右键可以弹出菜单',
@@ -67,13 +75,16 @@ let window = {
             if (value == null) value = Math.floor(Math.random() * tips.length);
             this.print('tips: ' + tips[value])
         },
-        switchMainPanel: function(panel) {
+        switchMainPanel(panel) {
             this.mainPanelActive = panel.id;
             //this.$refs[panel.pane].active();
         },
-        injectStatusItem: function(align, item) {
+        injectStatusItem(align, item) {
             editor.ui.insertSortElm(this.$refs[align], item.$el);
         },
+        openBlockly(node, type) {
+            return this.$refs.blockly.import(node, type);
+        }
     },
     components: {
         ...mainPanels, blocklyEditor
