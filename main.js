@@ -78,14 +78,17 @@ function main() {
         'next': document.getElementById('next')
     };
     this.mode = 'play';
-    this.loadList = [
+    this.libs = [
         'loader', 'control', 'utils', 'items', 'icons', 'maps', 'enemys', 'events', 'actions', 'data', 'ui', 'extensions', 'core'
     ];
     this.pureData = [ 
         'data', 'enemys', 'icons', 'maps', 'items', 'functions', 'events', 'plugins'
     ];
     this.materials = [
-        'animates', 'enemys', 'hero', 'items', 'npcs', 'terrains', 'enemy48', 'npc48'
+        'animates', 'enemys', 'items', 'npcs', 'terrains', 'enemy48', 'npc48'
+    ];
+    this.systemMaterials = [
+        "fog", "keyboard", "icons", "ground"
     ];
 
     this.statusBar = {
@@ -219,21 +222,27 @@ main.prototype.init = function (mode, callback) {
         });
         main.createOnChoiceAnimation();
         
-        main.loadJs('libs', main.loadList, function () {
+        main.loadJs('libs', main.libs, function () {
             main.core = core;
 
-            for (i = 0; i < main.loadList.length; i++) {
-                var name = main.loadList[i];
+            for (i = 0; i < main.libs.length; i++) {
+                var name = main.libs[i];
                 if (name === 'core') continue;
                 main.core[name] = new window[name]();
             }
 
             main.loadFloors(function() {
                 var coreData = {};
-                ["dom", "statusBar", "canvas", "images", "tilesets", "materials",
-                    "animates", "bgms", "sounds", "floorIds", "floors"].forEach(function (t) {
+                ["dom", "statusBar", "canvas", "floorIds", "floors"].forEach(function (t) {
                     coreData[t] = main[t];
                 })
+                coreData.loadList = {
+                    resources: main.resources,
+                    audios: main.audios,
+                    animates: main.animates,
+                    tiles: main.materials,
+                    system: main.systemMaterials
+                }
                 main.core.init(coreData, callback);
                 main.core.resize();
             });
