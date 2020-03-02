@@ -5,12 +5,14 @@
     <link href="_server/css/editor.css" rel="stylesheet">
     <link href="_server/css/codicon.css" rel="stylesheet">
     <link href="_server/mt-ui/mt-ui.css" rel="stylesheet">
+    <link href="_server/thirdparty/awesomplete.css" rel="stylesheet">
 </head>
 <body>
 <script>
-    if (location.protocol.indexOf("http")!=0) {
+    if (!location.protocol.startsWith("http")) {
         alert("请在启动服务中打开本编辑器！不然包括编辑在内的绝大多数功能都无法使用。");
-    }
+        window.isOnline = false;
+    } else window.isOnline = true;
 </script>
 <div id="window">
     <header>
@@ -44,15 +46,14 @@
 <script src='_server/editor_game.js'type="module"></script>
 <script src='_server/editor_file.js'type="module"></script>
 <script src='_server/editor_listen.js'type="module"></script>
-<script src='_server/editor_render.js'type="module"></script>
 <script src='_server/editor_service.js'type="module"></script>
 <script src='_server/editor.js'type="module"></script>
-<script src='_server/mt-ui/core.js' type="module"></script>
+<script src='_server/thirdparty/pixi.js' type="module"></script>
+<script src="_server/thirdparty/awesomplete.min.js"></script>
 
 <!-- monaco -->
 <script src='_server/vs/loader.js' type="module"></script>
 <!-- blockly -->
-<script src="_server/blockly/Converter.bundle.min.js"></script>
 <script src="_server/blockly/blockly_compressed.js"></script>
 <script src="_server/blockly/blocks_compressed.js"></script>
 <script src="_server/blockly/javascript_compressed.js"></script>
