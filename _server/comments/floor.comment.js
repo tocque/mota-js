@@ -120,7 +120,9 @@ export default {
         },
         "color": {
             "_leaf": true,
-            "_type": "text",
+            "_type": "color",
+            "_alpha": true,
+            "_parse": "array",
             "_name": "画面色调",
             "_data": "该层的默认画面色调。本项可不写（代表无色调），如果写需要是一个RGBA数组如[255,0,0,0.3]"
         },
@@ -143,9 +145,9 @@ export default {
         },
         "item_ratio": {
             "_leaf": true,
-            "_type": "text",
+            "_type": "number",
             "_name": "宝石/血瓶倍率",
-            "_range": "(thiseval==~~thiseval && thiseval>=0)||thiseval==null",
+            "_min": 0,
             "_data": "每一层的宝石/血瓶效果，即获得宝石和血瓶时框内\"ratio\"的值。"
         },
         "underGround": {
