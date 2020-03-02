@@ -5,22 +5,18 @@ export default {
     <mt-side-pane pane="pluginLib" icon="extensions" label="插件库">
         <mt-search placeholder="搜索插件"></mt-search>
         <div class="container">
-            <ul>
-                <li v-for="(info, index) of pluginList"
-                    :key="index" :info="info" :class="chosen == index"
-                    @click="chose(info, index)"
-                >
-                    <h5>{{ info.name }}</h5>
-                    <p>{{ info.abstract }}</p>
-                    <span>{{ info.author }}</span>
-                </li>
-            </ul>
+            <mt-list :items="pluginList" @chose="chose">
+                <template #item="{ item }">
+                    <h5>{{ item.name }}</h5>
+                    <p>{{ item.abstract }}</p>
+                    <span>{{ item.author }}</span>
+                </template>
+            </mt-list>
         </div>
     </mt-side-pane>
     `,
     data() {
         return {
-            chosen: -1,
             pluginList: [],
         }
     },
@@ -36,7 +32,6 @@ export default {
                 })).data);
         },
         chose(info, index) {
-            this.chosen = index;
             this.$emit("openTab", {
                 type: "plugin",
                 info,
