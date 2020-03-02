@@ -1,15 +1,50 @@
 main.floors.sample2=
 {
-"floorId": "sample2",
-"title": "样板 2 层",
-"name": "2",
-"canFlyTo": true,
-"canUseQuickShop": true,
-"cannotViewMap": false,
-"defaultGround": "ground",
-"images": [],
-"item_ratio": 1,
-"map": [
+    "floorId": "sample2",
+    "title": "样板 2 层",
+    "name": "2",
+    "width": 26,
+    "height": 26,
+    "canFlyTo": true,
+    "canUseQuickShop": true,
+    "cannotViewMap": false,
+    "cannotMoveDirectly": false,
+    "images": [],
+    "item_ratio": 1,
+    "underGround": false,
+    "defaultGround": "ground",
+    "bgm": null,
+    "upFloor": null,
+    "downFloor": null,
+    "color": null,
+    "weather": null,
+    "firstArrive": [],
+    "eachArrive": [],
+    "parallelDo": "",
+    "events": {
+        "3,2": [
+            "123"
+        ],
+        "12,12": [
+            "234"
+        ]
+    },
+    "changeFloor": {
+        "6,10": {
+            "floorId": "sample1",
+            "stair": "upFloor"
+        },
+        "7,12": {
+            "floorId": "sample3",
+            "stair": "downFloor"
+        }
+    },
+    "afterBattle": {},
+    "afterGetItem": {},
+    "afterOpenDoor": {},
+    "autoEvent": {},
+    "cannotMove": {},
+    "map": [
     [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
     [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
     [  0,  0,  1,121,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
@@ -37,36 +72,10 @@ main.floors.sample2=
     [  0,  0,  0,  0,  0,202,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,202,  0,  0,  0,  0,  0,  0,  0],
     [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0]
 ],
-"width": 26,
-"height": 26,
-"firstArrive": [],
-"events": {
-    "3,2": [
-        "123"
-    ],
-    "12,12": [
-        "234"
-    ]
-},
-"changeFloor": {
-    "6,10": {
-        "floorId": "sample1",
-        "stair": "upFloor"
-    },
-    "7,12": {
-        "floorId": "sample3",
-        "stair": "downFloor"
-    }
-},
-"afterBattle": {},
-"afterGetItem": {},
-"afterOpenDoor": {},
-"cannotMove": {},
-"upFloor": null,
-"bgmap": [
+    "bgmap": [
 
 ],
-"fgmap": [
+    "fgmap": [
 
-],
+]
 }
