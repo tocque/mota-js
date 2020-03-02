@@ -12,7 +12,11 @@ const controlNode = {
                     :value="option"
                 >{{ option }}</option>
             </select>
+            <el-color-picker v-if="comment._type == 'color'"
+                :show-alpha="comment._alpha" v-model="value"
+            ></el-color-picker>
             <input type="text" v-if="comment._type == 'text'" v-model="value"></mt-switch>
+            <input type="number" v-if="comment._type == 'number'" v-model="value"></mt-switch>
         </div>
     </div>`,
     props: ["node", "data"],
