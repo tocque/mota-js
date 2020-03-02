@@ -6,7 +6,7 @@
   * 容器
   */
 export const MtContainer = {
-    name: "mt-view",
+    name: "mt-container",
     template: /* HTML */`
     <div class="mt-container">
         <div
@@ -36,6 +36,36 @@ export const MtContainer = {
         },
         openTabByKey(key) {
 
+        }
+    }
+}
+
+/**
+ * 窗口
+ */
+export const MtWindow = {
+    name: "mt-window",
+    template: /* HTML */`
+    <div class="mt-window">
+        <div class="__title">
+            <slot name="title"></slot>
+            <div v-if="closeBtn != null" @click="close" class="__control">
+                <mt-icon icon="chrome-close"></mt-icon>
+            </div>
+        </div>
+        <slot></slot>
+        <div class="__mask__" ref="mask" v-if="mask != null" v-show="active"></div>
+    </div>
+    `,
+    props: ["closeBtn", "active", "mask"],
+    mounted() {
+        if (this.mask != null) document.body.appendChild(this.$refs.mask);
+        document.body.appendChild(this.$el);
+    },
+    methods: {
+        close() {
+            this.$emit("close")
+            this.$emit("update:active", false)
         }
     }
 }
