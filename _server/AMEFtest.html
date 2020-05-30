@@ -13,14 +13,15 @@
             $template = /* HTML */`
             <div class="unit">
                 <input type="text" &momey/>
-                <span>商店的价格是: {{ momey }}</span>
+                <span @click="console.log('ok')">商店的价格是: {{ momey }}</span>
                 下一次是 {{ momey + 2 }} 元
-                <mt-icon></mt-icon>
+                <mt-icon icon="close"></mt-icon>
             </div>
             `
-
-            $data = {
-                momey: 10
+            $setup() {
+                this.$data = {
+                    momey: 10
+                }
             }
         })
         vm.$mount("#test");
