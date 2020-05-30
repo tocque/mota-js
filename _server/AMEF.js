@@ -134,6 +134,21 @@ const textParser = function(tpl) {
 }
 
 /**
+ * 表达式解析, 分析表达式中引用的组件变量, 并添加this指向
+ * @param {string} tpl
+ * @returns {{ ref: {[key: string]: string}, experssion: string }}
+ */
+const expressionParser = function(tpl) {
+    const ref = {};
+    tpl = tpl.replace(/@([a-z]+)/g, (all, name) => {
+        ref[name] = true;
+        return "this." + name;
+    })
+    // @ts-ignore
+    return { ref, experssion: tpl };
+}
+
+/**
  * AMEF组件的基类, 绝大多数框架功能在此处实现
  * 内置函数和变量以$开头
  * 内部实现用的各方法和变量以_开头
@@ -236,7 +251,16 @@ window.AMEFComponent = class AMEFComponent {
             Object.entries(tagContent.attrs).forEach(([attr, val]) => {
                 switch (attr[0]) {
                     case ':': {
-
+                        const propName = attr.slice(1);
+                        const { ref, experssion } = expressionParser(val);
+                        const calAttr = new Function(experssion).bind(this);
+                        const updateAttr = function() {
+                            elm.setAttribute(propName, calAttr());
+                        }
+                        Object.keys(ref).forEach((key) => {
+                            this.$watch(key, updateAttr);
+                        })
+                        updateAttr();
                     } break;
                     case '&': {
                         if (!(elm instanceof HTMLInputElement)) {
@@ -252,15 +276,17 @@ window.AMEFComponent = class AMEFComponent {
                             elm.value = val;
                         })
                         elm.value = this[propName];
+                        let needParse = (typeof this[propName] === "number")
                         elm.addEventListener("input", (e) => {
                             // @ts-ignore
-                            this[propName] = e.target.value;
+                            this[propName] = needParse ? parseInt(e.target.value) : e.target.value;
                         })
                     } break;
                     case '@': {
-                        const func = new Function(val);
-                        elm.addEventListener(attr.slice(1), () => {
-                            func();
+                        const { experssion } = expressionParser(val);
+                        const func = new Function(experssion).bind(this);
+                        elm.addEventListener(attr.slice(1), (e) => {
+                            func(e);
                         })
                     } break;
                     default: return; // 普通属性略过后续处理
@@ -273,7 +299,26 @@ window.AMEFComponent = class AMEFComponent {
         } else {
             console.log(elm.textContent);
             const textContent = textParser(elm.textContent);
-            console.log(textContent)
+            console.log(textContent);
+            if (textContent.length === 1 && textContent[0][0] === 0) return;
+            const refs = {};
+            for (let token of textContent) {
+                if (token[0] == 1) {
+                    const { ref, experssion } = expressionParser(token[1]);
+                    token[1] = experssion;
+                    Object.assign(refs, ref);
+                }
+            }
+            const updateText = function() {
+                elm.textContent = textContent.map(([type, content]) => {
+                    if (type == 0) return content;
+                    else return eval(content);
+                }).join("");
+            }.bind(this);
+            Object.keys(refs).forEach((key) => {
+                this.$watch(key, updateText);
+            })
+            updateText();
         }
     }
 
