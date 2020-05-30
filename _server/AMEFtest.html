@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="test"></div>
+    <script src="AMEF.js"></script>
+    <script>
+        const vm = (new class extends AMEFComponent {
+            $template = /* HTML */`
+            <div class="unit">
+                <input type="text" &momey/>
+                <span>商店的价格是: {{ momey }}</span>
+                下一次是 {{ momey + 2 }} 元
+                <mt-icon></mt-icon>
+            </div>
+            `
+
+            $data = {
+                momey: 10
+            }
+        })
+        vm.$mount("#test");
+    </script>
+</body>
+</html>

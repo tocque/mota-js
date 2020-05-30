@@ -26,25 +26,25 @@
             <input type="button" value="批量创建空白地图 ↓" id='newMaps' @click="showNewMap"/>
             <div ref='newFloors' v-show="showForm">
                 <span>楼层ID格式: </span>
-                <input ref='newFloorIds' style="width: 70px"/>
+                <input &floorIds style="width: 70px"/>
                 <br/>
                 <span>地图中文名格式: </span>
-                <input ref='newFloorTitles' style="width: 100px"/>
+                <input &floorTitles style="width: 100px"/>
                 <br/>
                 <span>状态栏名称: </span>
-                <input ref='newFloorNames' style="width: 70px"/>
+                <input &floorNames style="width: 70px"/>
                 <br/>
                 <span>宽</span> 
-                <input ref='newMapsWidth' style="width: 20px"/>
+                <input &width style="width: 20px"/>
                 <span>高</span>
-                <input ref='newMapsHeight' style="width: 20px"/>
-                <input type="checkbox" ref='newMapsStatus' style='vertical-align: bottom'/>
-                <span style='vertical-align: bottom; margin-left: -4px'>保留楼层属性</span>
+                <input &height style="width: 20px"/>
+                <input type="checkbox" &extends style='vertical-align: bottom'/>
+                <span style='margin-left: -4px'>保留楼层属性</span>
                 <br/>
                 <span>从 i=</span>
-                <input ref='newMapsFrom' style="width: 20px"/>
+                <input &from style="width: 20px"/>
                 <span>到</span>
-                <input ref='newMapsTo' style="width: 20px"/>
+                <input &to style="width: 20px"/>
                 <input type="button" value="确认创建" @click="createNewMaps">
             </div>
         </div>
@@ -66,21 +66,14 @@ export default class ArrEditor extends AMEFComponent {
     }
 
     $setup() {
-        this.$bind([
-            ['newFloorIds', "floorIds"],
-            ['newFloorTitles', "titles"],
-            ['newFloorNames', "names"],
-            ['newMapsFrom', "from"],
-            ['newMapsTo', "to"],
-            ['newMapsWidth', "width"],
-            ['newMapsHeight', "height"],
-            ['newMapsStatus', 'extends'],
-        ]);
+        this.$select("#newMapHeight").appendChild(this.$render(/* HTML */`
+            <span>高: {{ height }}</span>
+        `))
     }
     
     importMap() {
         const sy = editor.map.length, sx = editor.map[0].length;
-        var mapArray;
+        let mapArray;
         try {
             mapArray = JSON.parse('[' + pout.value + ']');
             if (mapArray.length != sy || mapArray[0].length != sx) throw '';
@@ -88,10 +81,10 @@ export default class ArrEditor extends AMEFComponent {
             this.$error('格式错误！请使用正确格式(请使用地图生成器进行生成，且需要和本地图宽高完全一致)');
             return;
         }
-        var hasError = false;
-        for (var y = 0; y < sy; y++) {
-            for (var x = 0; x < sx; x++) {
-                var num = mapArray[y][x];
+        let hasError = false;
+        for (let y = 0; y < sy; y++) {
+            for (let x = 0; x < sx; x++) {
+                let num = mapArray[y][x];
                 if (num == 0)
                     editor.map[y][x] = 0;
                 else if (editor.indexs[num]==null || editor.indexs[num][0]==null) {
