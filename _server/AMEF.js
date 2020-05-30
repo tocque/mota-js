@@ -150,19 +150,30 @@ const expressionParser = function(tpl) {
 
 /**
  * AMEF组件的基类, 绝大多数框架功能在此处实现
- * 内置函数和变量以$开头
- * 内部实现用的各方法和变量以_开头
+ * - 内置函数和变量以$开头
+ * - 内部实现用的各方法和变量以_开头
  */
-// @ts-ignore
-window.AMEFComponent = class AMEFComponent {
+class AMEFComponent {
 
-    /** @type {{[key: string]: any}} */$data = {}
-    /** @type {HTMLElement} */$root
-    /** @type {AMEFComponent} */$parent
-    /** @type {AMEFComponent[]} */$children = []
-    /** @type {string} */$template = ""
+    /** @type {{[key: string]: any}} */
+    $data = {}
+    /** @type {HTMLElement} 组件dom元素的根节点 */
+    $root
+    /** @type {AMEFComponent} */
+    $parent
+    /** @type {AMEFComponent[]} */
+    $children = []
+    /** @type {string} 组件的模板 */
+    $template = ""
+    /** @type {string} 组件名称 */
+    $name
+    /** @type {{[key: string]: AMEFComponent}} */
+    $components = {}
+    /** @type {{[key: string]: () => AMEFComponent}} */
+    $slots = {}
 
-    /** @type {{[key: string]: Array<(value: any, oldValue: any) => void>}} */_watcher = {}
+    /** @type {{[key: string]: Array<(value: any, oldValue: any) => void>}} */
+    _watcher = {}
 
     constructor() {
         this.$setup();
@@ -248,6 +259,15 @@ window.AMEFComponent = class AMEFComponent {
             const tagHTML = elm.cloneNode().outerHTML;
             const tagContent = tagParser(tagHTML);
             console.log(tagContent);
+            const tagName = tagContent.tagName;
+            const isComponent = tagName.includes("-");
+            if (isComponent) { // 有连字符则判断为组件
+                // @ts-ignore
+                const component = this.$components[tagName] || AMEF._global[tagName];
+                if (!component) {
+                    throw Error(`未注册的组件: <${tagName}></${tagName}>`);
+                }
+            }
             Object.entries(tagContent.attrs).forEach(([attr, val]) => {
                 switch (attr[0]) {
                     case ':': {
@@ -293,8 +313,12 @@ window.AMEFComponent = class AMEFComponent {
                 }
                 elm.removeAttribute(attr);
             })
-            for (let e of elm.childNodes) { 
-                this._attachEmitter(e, elm);
+            if (isComponent) { // 组件的innerHTML作为插槽模板使用
+                elm.innerHTML
+            } else {
+                for (let e of elm.childNodes) { 
+                    this._attachEmitter(e, elm);
+                }
             }
         } else {
             console.log(elm.textContent);
@@ -354,7 +378,34 @@ window.AMEFComponent = class AMEFComponent {
             this.$parent = parent;
         }
         this.$root = this.$render(this.$template);
-        to.appendChild(this.$root);
+        to.replaceWith(this.$root);
+        return this;
+    }
+}
+
+// @ts-ignore
+window.AMEF = new class {
+    Component = AMEFComponent
+    _global = {};
+
+    /**
+     * 注册一个全局组件
+     * @param {AMEFComponent} component 
+     * @param {string} [name] 组件名称 
+     */
+    register(component, name) {
+        name = name ?? component.$name;
+        if (!name) {
+            console.error("请提供组件名称, 错误组件: " + component.$template);
+            return;
+        } else if (name in this._global) {
+            console.error(`已经注册了同名组件, 错误组件: <${name}></${name}>`);
+            return;
+        } else if (!name.includes("-")) {
+            console.error(`组件名称必须包含连字符, 错误组件: <${name}></${name}>`);
+            return;
+        }
+        this._global[name] = component;
     }
 }
 
